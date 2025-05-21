@@ -1,0 +1,95 @@
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center">
+        <div class="col col-lg-9 col-xl-8">
+          <div class="card">
+  
+            <!-- Profile Header Section -->
+            <div class="rounded-top text-white position-relative" style="background-color: #000; height: 200px;">
+              <!-- Cover Photo -->
+              <img 
+              [src]="userProfile?.coverPhotoUrl ? baseUrl + userProfile.coverPhotoUrl : 'assets/default-cover.jpg'"
+              alt="Cover photo"
+              class="img-fluid w-100 h-100 object-fit-cover">
+  
+              <!-- Profile Info Section -->
+              <div class="position-absolute" style="bottom: 20px; left: 20px; z-index: 1;">
+                <div class="d-flex align-items-end gap-3">
+                  <img 
+                    [src]="userProfile?.profilePictureUrl ? baseUrl + userProfile?.profilePictureUrl : 'assets/default-profile.jpg'"
+                    alt="Profile picture"
+                    class="rounded-circle border border-3 border-white"
+                    style="width: 100px; height: 100px;">
+                  
+                  <div class="text-white text-shadow">
+                    <h3 class="mb-0 fw-bold">{{ userProfile?.displayName || 'New User' }}</h3>
+                    <h5 class="mb-0">{{ userProfile?.userName }}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end gap-2 mt-4 px-3">
+             <button class="btn btn-primary rounded-pill px-3" (click)="onAddFriend(userId)">
+                <i class="bi bi-plus-lg me-1"></i> Send Friend Request
+              </button>
+              <a   [routerLink]="['/main-layout/chat', userId, userProfile?.displayName]" routerLinkActive="router-link-active"  class="btn btn-outline-primary rounded-pill px-3">
+                <i class="bi bi-chat-left-text me-1"></i> Message
+              </a>              
+            </div>
+  
+<!-- Bio Section -->
+<div class="col p-2 text-black bg-body-tertiary">
+    <div class="text-body">
+      
+      <!-- User Bio -->
+      <div class="px-3 text-start mb-2">
+        <p class="mb-0 text-muted">{{ userProfile?.bio }}</p>
+      </div>
+      
+      <!-- User Address -->
+      <div class="px-3 text-start">
+        <p class="mb-0 text-muted">
+          {{
+            userProfile?.userAddress 
+              ? userProfile?.userAddress.country + ' - ' +
+                userProfile?.userAddress.city + ' - ' +
+                userProfile?.userAddress.street 
+              : 'Unknown location'
+          }}
+        </p>
+      </div>
+  
+    </div>
+  </div>
+  
+  
+  
+            <!-- Followers / Following Count -->
+            <div class="p-4 text-black bg-body-tertiary">
+              <div class="d-flex justify-content-start align-items-center text-center text-body">
+                <!-- Followers -->
+                <div class="px-3 text-center">
+                  <p class="mb-1 h5 fw-bold">1026</p>
+                  <p class="small text-muted mb-0">Followers</p>
+                </div>
+  
+                <!-- Following -->
+                <div class="px-3 text-center">
+                  <p class="mb-1 h5 fw-bold">478</p>
+                  <p class="small text-muted mb-0">Following</p>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Profile Body Section -->
+            <div class="card-body p-4 text-black">
+  
+            </div>
+          </div> <!-- End Card -->
+        </div>
+      </div>
+    </div>
+  </section>
+  

@@ -1,0 +1,15 @@
+global using API.Contracts;
+global using System.Linq.Expressions;
+global using API.IService;
+global using API.Shared.Dtos.AuthenticationDtos;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
+global using API.Shared.Dtos.UserDtos;
+global using API.Entities;
+global using Microsoft.EntityFrameworkCore;
+global using API.Data;
+global using API.Setting;
+global using API.Shared;
+global using API.Shared.Exceptions;
+global using API.Specifications;
+global using AutoMapper;

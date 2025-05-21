@@ -1,0 +1,35 @@
+/* Sidebar container */
+.sidebar {
+  background-color: whitesmoke; /* Facebook blue */
+  color: white;
+  min-height: 100vh;
+}
+
+/* Links */
+.sidebar a {
+  color: white;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* On hover */
+.sidebar a:hover {
+  background-color: #166fe5;
+  color: white;
+}
+
+/* Active routerLink */
+.sidebar .nav-link.active {
+  background-color: #145dbf;
+  color: white;
+}
+
+/* SVG icons inside links */
+.sidebar svg {
+  margin-right: 8px;
+  fill:blue;
+}
+
+/* Remove Bootstrap light background if present */
+.bg-light {
+  background-color: transparent !important;
+}

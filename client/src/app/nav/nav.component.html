@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+<a routerLink="/" class="navbar-brand text-white d-flex align-items-center">
+  <!-- Facebook SVG Icon -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-facebook rounded-circle me-2" viewBox="0 0 16 16">
+    <path d="M8.94 6.02H7.29v1.438h1.184v1.13H7.29V12H6.032V8.59H4.878V7.46h1.154V6.55c0-1.093.687-1.68 1.62-1.68h1.187v1.15z"/>
+  </svg>
+</a>
+
+  <div class="ms-auto d-flex align-items-center">
+    <ng-container *ngIf="showLoggedInNav">
+      <a routerLink="dashboard" class="nav-link text-white me-3" routerLinkActive="active">Users</a>
+
+      <div class="dropdown">
+        <a
+          class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+          href="#"
+          id="userDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            [src]="user?.profilePictureUrl ? baseUrl + user.profilePictureUrl : 'assets/default-profile.jpg'"
+            alt="Profile"
+            width="32"
+            height="32"
+            class="rounded-circle me-2"
+          />
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="userDropdown">
+          <li><a [routerLink]="['/main-layout/profile', getUserId()]" class="dropdown-item">Profile</a></li>
+          <li><a [routerLink]="['/main-layout/edit', getUserId()]" class="dropdown-item"><i class="bi bi-pencil-square me-1"></i> Edit Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button (click)="logout()" class="dropdown-item text-danger">Logout</button></li>
+        </ul>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!showLoggedInNav">
+      <a routerLink="/login" class="nav-link text-white" routerLinkActive="active">Login</a>
+    </ng-container>
+  </div>
+</nav>

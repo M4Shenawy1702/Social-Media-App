@@ -1,0 +1,39 @@
+<div class="friend-requests-container">
+  <h2>Friend Requests</h2>
+
+  @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="loading">Loading...</div>
+  }
+
+  @if (!isLoading && friendRequests.length === 0) {
+    <p>You have no pending friend requests</p>
+  }
+
+  @if (!isLoading && friendRequests.length > 0) {
+    <div class="requests-grid">
+      @for (request of friendRequests; track request.id) {
+        <div class="request-card">
+          <img
+            class="avatar"
+            [src]="request.profilePictureUrl || 'assets/default-avatar.png'"
+            alt="{{ request.initiatorName }}"
+          />
+          <div class="info">
+            <h3>{{ request.initiatorName }}</h3>
+            <p class="status">Status: {{ request.status }}</p>
+            <p class="date">Sent on: {{ request.createdAt | date:'mediumDate' }}</p>
+          </div>
+          <div class="card-footer bg-transparent">
+              <a [routerLink]="['/main-layout/profile', user.id]" class="btn btn-outline-primary w-100">
+                View Profile
+              </a>
+            </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,14 @@
+.main-layout {
+  display: flex;
+  height: 100vh;
+}
+
+app-side-bar {
+  width: 250px;
+}
+
+.page-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}

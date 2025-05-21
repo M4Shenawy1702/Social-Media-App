@@ -1,0 +1,76 @@
+<form #profileForm="ngForm" class="container mt-4" (ngSubmit)="updateUserProfile(userProfile)">
+    <!-- Cover Photo Preview and Input -->
+    <div class="mb-4 text-center">
+      <img 
+        [src]="coverPreview || (baseUrl + userProfile.coverPhotoUrl)" 
+        alt="Cover Photo" 
+        class="img-fluid rounded mb-2" 
+        style="height: 200px; object-fit: cover; width: 100%;">
+      <input type="file" (change)="onCoverPhotoChange($event)" accept="image/*" class="form-control">
+    </div>
+  
+    <div class="row">
+      <!-- Left Column: Profile Picture -->
+      <div class="col-md-4 text-center">
+        <img 
+          [src]="profilePreview || (baseUrl + userProfile.profilePictureUrl)" 
+          alt="Profile Picture" 
+          class="img-thumbnail rounded-circle mb-3" 
+          style="width: 150px; height: 150px; object-fit: cover;">
+        <input type="file" (change)="onProfilePhotoChange($event)" accept="image/*" class="form-control">
+      </div>
+  
+      <!-- Right Column: Profile Form Fields -->
+      <div class="col-md-8">
+        <div class="mb-3">
+          <label class="form-label">Display Name</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.displayName" name="displayName">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.userName" name="userName">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" [(ngModel)]="userProfile.email" name="email">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Phone Number</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.phoneNumber" name="phoneNumber">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="userProfile.bio" name="bio"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" class="form-control" [(ngModel)]="userProfile.dateOfBirth" name="dateOfBirth">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Gender</label>
+          <select class="form-select" [(ngModel)]="userProfile.gender" name="gender">
+            <option [ngValue]="0">Male</option>
+            <option [ngValue]="1">Female</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.userAddress.country" name="country">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">City</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.userAddress.city" name="city">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Street</label>
+          <input type="text" class="form-control" [(ngModel)]="userProfile.userAddress.street" name="street">
+        </div>
+      </div>
+    </div>
+  
+    <!-- Submit Button -->
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-primary">Update Profile</button>
+    </div>
+  </form>
+  

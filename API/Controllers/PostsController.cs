@@ -10,6 +10,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<PostDto>> CreatePost([FromForm] CreatePostDto dto)
         {
+            Console.WriteLine($"Received {dto.Media.Count} media files");
             var post = await _postService.CreatePostAsync(dto);
             return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
         }

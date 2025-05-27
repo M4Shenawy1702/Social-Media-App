@@ -12,6 +12,7 @@ namespace API.Specifications
         public GetPostByIdSpesifications(int postId)
         : base(p => p.Id == postId)
         {
+            AddInclude(p => p.Author);
             AddInclude(p => p.Media);
             AddInclude(p => p.Comments);
             AddInclude(p => p.Likes);

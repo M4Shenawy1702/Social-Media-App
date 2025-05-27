@@ -1,20 +1,29 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.Shared.Dtos.PostDtos;
 
 namespace API.Specifications
 {
-    internal class PostSpecification
-    : BaseSpecifications<Post>
+    internal class PostSpecification : BaseSpecifications<Post>
     {
         public PostSpecification(PostQueryParameters parameters)
-        : base(u => string.IsNullOrWhiteSpace(parameters.Search) || u.Content.ToLower().Trim().Contains(parameters.Search.ToLower().Trim()))
+            : base(u =>
+                (
+                    string.IsNullOrWhiteSpace(parameters.Search) ||
+                    u.Content.ToLower().Trim().Contains(parameters.Search.ToLower().Trim()) ||
+                    u.Author.DisplayName.ToLower().Trim().Contains(parameters.Search.ToLower().Trim()) ||
+                    u.Author.UserName!.ToLower().Trim().Contains(parameters.Search.ToLower().Trim())
+                )
+                &&
+                (
+                    string.IsNullOrWhiteSpace(parameters.UserId) || u.Author.Id == parameters.UserId
+                )
+            )
         {
+            AddInclude(p => p.Author);
             AddInclude(p => p.Media);
             AddInclude(p => p.Comments);
-            
+            AddInclude(p => p.Likes);
+
             ApplyPagination(parameters.PageSize, parameters.PageIndex);
         }
     }

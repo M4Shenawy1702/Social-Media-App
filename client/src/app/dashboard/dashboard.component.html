@@ -19,13 +19,13 @@
   }
 
   <!-- Users cards -->
-  @if (!isLoading && !errorMessage && users.length > 0) {
+  @if (!isLoading && !errorMessage && users.data.length > 0) {
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
-      @for (user of users; track user.id) {
+     @for (user of users.data; track user.id) {
         <div class="col">
           <div class="card h-100">
             @if (user.profilePictureUrl) {
-              <img src="{{baseUrl}}{{user.profilePictureUrl}}" 
+              <img [src]="baseUrl + user.profilePictureUrl"
                    class="card-img-top object-fit-cover" 
                    style="height: 180px" 
                    [alt]="user.userName + '\'s profile photo'">
@@ -61,7 +61,7 @@
   }
 
   <!-- No users found -->
-  @if (!isLoading && !errorMessage && users.length === 0) {
+  @if (!isLoading && !errorMessage && users.data.length === 0) {
     <div class="d-flex justify-content-center align-items-center vh-100">
       <div class="alert alert-info text-center">
         No users found

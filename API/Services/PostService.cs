@@ -18,33 +18,37 @@ namespace API.Services
                 Content = dto.Content,
                 AuthorId = dto.AuthorId,
                 LastUpdatedAt = DateTime.UtcNow,
-                Media = []
+                Media = new List<PostMedia>()
             };
 
-            foreach (var mediaDto in dto.Media)
+            foreach (var file in dto.Media)
             {
-                var fileName = $"{Guid.NewGuid()}_{mediaDto.Media.FileName}";
+                var fileName = $"{Guid.NewGuid()}_{file.FileName}";
                 var savePath = Path.Combine("wwwroot", "images", "posts", fileName);
                 var publicUrl = $"/images/posts/{fileName}";
 
                 Directory.CreateDirectory(Path.GetDirectoryName(savePath)!);
                 using (var stream = new FileStream(savePath, FileMode.CreateNew))
                 {
-
-                    await mediaDto.Media.CopyToAsync(stream);
+                    await file.CopyToAsync(stream);
                 }
+
+                // حدد نوع الملف بناءً على ContentType فقط (مثال)
+                var mediaType = file.ContentType.StartsWith("video") ? MediaType.Video : MediaType.Image;
 
                 post.Media.Add(new PostMedia
                 {
                     Url = publicUrl,
-                    Type = mediaDto.Type.ToLower() == "video" ? MediaType.Video : MediaType.Image
+                    Type = mediaType
                 });
             }
+
             _unitOfWork.GetRepository<Post, int>().Add(post);
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<PostDto>(post);
         }
+
 
         public async Task<string> DeletePostAsync(int id)
         {
@@ -64,9 +68,10 @@ namespace API.Services
             var repo = _unitOfWork.GetRepository<Post, int>();
             var posts = await repo.GetAllAsync(specification);
             var data = _mapper.Map<IEnumerable<PostDto>>(posts);
-            var pageCount = data.Count();
+            //var pageCount = data.Count();
             var totalCount = await repo.CountAsync(new PostsCountSpecifications(parameters));
-            return new(parameters.PageIndex, pageCount, totalCount, data);
+           return new PaginatedResult<PostDto>(parameters.PageIndex, parameters.PageSize, totalCount, data);
+
         }
 
         public async Task<PostDto> GetPostByIdAsync(int id)

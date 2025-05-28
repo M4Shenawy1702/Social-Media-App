@@ -62,16 +62,28 @@ namespace API.Services
             return "Post deleted successfully";
         }
 
-        public async Task<PaginatedResult<PostDto>> GetAllPostsAsync(PostQueryParameters parameters)
+        public async Task<PaginatedResult<PostDto>> GetAllPostsAsync(PostQueryParameters parameters , string currentUserId)
         {
             var specification = new PostSpecification(parameters);
             var repo = _unitOfWork.GetRepository<Post, int>();
             var posts = await repo.GetAllAsync(specification);
-            var data = _mapper.Map<IEnumerable<PostDto>>(posts);
-            //var pageCount = data.Count();
-            var totalCount = await repo.CountAsync(new PostsCountSpecifications(parameters));
-           return new PaginatedResult<PostDto>(parameters.PageIndex, parameters.PageSize, totalCount, data);
 
+            var postIds = posts.Select(p => p.Id).ToList();
+            var likesRepo = _unitOfWork.GetRepository<Like, int>();
+
+            var likedPostIds = await likesRepo.GetAllAsync(new GetLikesByPostIdsByUserIdSpecification(currentUserId,postIds));
+            var likedPostIdSet = likedPostIds.Select(l => l.PostId).ToHashSet();
+
+            var data = _mapper.Map<IEnumerable<PostDto>>(posts);
+
+            foreach (var postDto in data)
+            {
+                postDto.IsLiked = likedPostIdSet.Contains(postDto.Id);
+            }
+
+            var totalCount = await repo.CountAsync(new PostsCountSpecifications(parameters));
+
+            return new PaginatedResult<PostDto>(parameters.PageIndex, parameters.PageSize, totalCount, data);
         }
 
         public async Task<PostDto> GetPostByIdAsync(int id)

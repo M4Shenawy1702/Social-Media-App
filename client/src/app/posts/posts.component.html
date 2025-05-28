@@ -1,50 +1,4 @@
-<div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
-
-  <!-- Loading indicator -->
-  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <span class="ms-3">Loading posts...</span>
-  </div>
-
-  <!-- Error message -->
-  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3">
-    {{ errorMessage }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-
-  <!-- Create post button -->
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
-    <i class="bi bi-pencil-square me-1"></i> Create Post
-  </button>
-
-  <!-- Create Post Modal -->
-  <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <label for="content" class="form-label">Content</label>
-          <textarea class="form-control" id="content" rows="3" [(ngModel)]="postContent"></textarea>
-        </div>
-        <div>
-          <label for="image" class="form-label">Image/Video</label>
-          <input type="file" class="form-control" id="image" (change)="handleFileInput($event)" accept="image/*,video/*"
-            multiple>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="createPost()">Create</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- No posts message -->
+<!-- No posts message -->
   <div *ngIf="!isLoading && !errorMessage && posts.data.length === 0" class="alert alert-info mt-3 text-center">
     No posts found.
   </div>
@@ -178,4 +132,3 @@
     </nav>
 
   </div>
-</div>

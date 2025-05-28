@@ -10,5 +10,6 @@ export interface Post {
     media: PostMediaDetails[];
     comments: PostComment[];
     likes: number;
+    isLiked: boolean;
 }
 

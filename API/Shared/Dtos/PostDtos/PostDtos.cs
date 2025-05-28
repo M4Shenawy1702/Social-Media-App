@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Shared.Dtos.CommentDtos;
 
 namespace API.Shared.Dtos.PostDtos
 {
@@ -14,7 +15,8 @@ namespace API.Shared.Dtos.PostDtos
         public string AuthorName { get; set; } = null!;
         public string AuthorImageUrl { get; set; } = null!;
         public ICollection<PostMediaDetailsDto> Media { get; set; } = [];
-        public ICollection<PostCommentDto> Comments { get; set; } = [];
+        public ICollection<CommentDto> Comments { get; set; } = [];
         public int Likes { get; set; }
+        public bool IsLiked { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 using API.Shared.Dtos.PostDtos;
 using API.Shared.Dtos;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -10,7 +11,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<PostDto>> CreatePost([FromForm] CreatePostDto dto)
         {
-            Console.WriteLine($"Received {dto.Media.Count} media files");
             var post = await _postService.CreatePostAsync(dto);
             return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
         }
@@ -18,7 +18,10 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<PostDto>>> GetAll([FromQuery] PostQueryParameters parameters)
         {
-            var posts = await _postService.GetAllPostsAsync(parameters);
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var posts = await _postService.GetAllPostsAsync(parameters, currentUserId);
             return Ok(posts);
         }
 

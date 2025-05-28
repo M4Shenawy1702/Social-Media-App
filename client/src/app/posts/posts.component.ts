@@ -14,13 +14,13 @@ import { CommentsService } from '../Services/comments.service';
 declare const bootstrap: any;
 
 @Component({
-  selector: 'app-welcome',
+  selector: 'app-Posts',
   standalone: true,
-  templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.scss'],
+  templateUrl: './posts.component.html',
+  styleUrls: ['./posts.component.scss'],
   imports: [CommonModule, NgbModule, RouterModule, FormsModule],
 })
-export class WelcomeComponent implements OnInit {
+export class PostsComponent implements OnInit {
   baseUrl = 'http://localhost:5043/';
   isLoading = false;
   errorMessage = '';
@@ -53,7 +53,6 @@ export class WelcomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.CurrentUserId = this.authService.getCurrentUserId();
-   
     this.loadPosts();
   }
 
@@ -74,46 +73,6 @@ export class WelcomeComponent implements OnInit {
         console.error(err);
       }
     });
-  }
-
-  createPost(): void {
-    if (!this.postContent.trim() || !this.CurrentUserId) {
-      this.errorMessage = 'Post content is required.';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('Content', this.postContent);
-    formData.append('AuthorId', this.CurrentUserId);
-
-    this.selectedFiles.forEach(file => {
-      formData.append('Media', file);
-    });
-
-    this.postsService.createPost(formData).subscribe({
-      next: () => {
-        this.postContent = '';
-        this.selectedFiles = [];
-        this.loadPosts();
-        const modalEl = document.getElementById('createPostModal');
-        if (modalEl) {
-          const modal = bootstrap.Modal.getInstance(modalEl);
-          modal?.hide();
-        }
-      },
-      error: (err) => {
-        this.errorMessage = err.message || 'Failed to create post.';
-        console.error(err);
-      }
-    });
-  }
-
-
-  handleFileInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files) {
-      this.selectedFiles = Array.from(input.files);
-    }
   }
 
   onLike(post: Post): void {

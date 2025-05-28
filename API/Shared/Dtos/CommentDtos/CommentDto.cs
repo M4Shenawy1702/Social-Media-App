@@ -9,7 +9,7 @@ namespace API.Shared.Dtos.CommentDtos
     {
         public int Id { get; set; }
         public string Content { get; set; } = null!;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime LastUpdatedAt { get; set; }
         public int PostId { get; set; }
         public string? AuthorName { get; set; }
     }

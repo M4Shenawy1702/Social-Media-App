@@ -7,8 +7,8 @@ namespace API.IService
 {
     public interface ILikeService
     {
-        Task<LikeDto> AddLikeAsync(string userId, int postId); 
-        Task<bool> RemoveLikeAsync(string userId, int postId);
+        Task<string> ToggleLikeAsync(string userId, int postId); 
+        // Task<bool> RemoveLikeAsync(string userId, int postId);
         Task<IEnumerable<LikeDto>> GetUserLikesAsync(string userId);
         Task<bool> HasUserLikedAsync(string userId, int postId);
     }

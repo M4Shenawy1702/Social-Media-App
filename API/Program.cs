@@ -32,10 +32,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials());
+              .AllowAnyHeader());
 });
 
 var app = builder.Build();
@@ -57,6 +56,7 @@ app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 // Middleware Pipeline
 app.UseHttpsRedirection();
 app.UseRouting();
+
 app.UseStaticFiles();
 
 app.UseCors("AllowAngular");

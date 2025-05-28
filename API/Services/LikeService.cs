@@ -9,7 +9,7 @@ namespace API.Services
     public class LikeService(IUnitOfWork _unitOfWork, IMapper _mapper)
         : ILikeService
     {
-        public async Task<LikeDto> AddLikeAsync(string userId, int postId)
+        public async Task<string> ToggleLikeAsync(string userId, int postId)
         {
             var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
             var user = await userRepo.GetAsync(userId) ??
@@ -19,12 +19,15 @@ namespace API.Services
             var post = await postRepo.GetAsync(postId) ??
                 throw new PostNotFoundException(postId);
 
-            var likeRepo = _unitOfWork.GetRepository<Like, int>();    
+            var likeRepo = _unitOfWork.GetRepository<Like, int>();
             var existingLike = await likeRepo.GetAsync(new GetLikeSpecifications(userId, postId));
             if (existingLike != null)
-                throw new LikeAlreadyExistsException();
+            {
+                likeRepo.Delete(existingLike);
+                await _unitOfWork.SaveChangesAsync();
+                return "Like removed successfully";
+            }
 
-            
             var like = new Like
             {
                 PostId = post.Id,
@@ -34,7 +37,7 @@ namespace API.Services
             likeRepo.Add(like);
             await _unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<LikeDto>(like);
+            return "Like added successfully";
         }
 
         public async Task<IEnumerable<LikeDto>> GetUserLikesAsync(string userId)
@@ -53,17 +56,17 @@ namespace API.Services
             return like != null;
         }
 
-        public async Task<bool> RemoveLikeAsync(string userId, int postId)
-        {
-            var likeRepo = _unitOfWork.GetRepository<Like, int>();
-            var like = await likeRepo.GetAsync(new GetLikeSpecifications(userId, postId)) ??
-                throw new LikeNotFoundException();
+        // public async Task<bool> RemoveLikeAsync(string userId, int postId)
+        // {
+        //     var likeRepo = _unitOfWork.GetRepository<Like, int>();
+        //     var like = await likeRepo.GetAsync(new GetLikeSpecifications(userId, postId)) ??
+        //         throw new LikeNotFoundException();
 
-            likeRepo.Delete(like);
-            await _unitOfWork.SaveChangesAsync();
+        //     likeRepo.Delete(like);
+        //     await _unitOfWork.SaveChangesAsync();
 
-            return true;
-        }
+        //     return true;
+        // }
 
     }
 }

@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
+import { FriendListDetails } from '../shared/Contracts/FreindRequestDetails';
+
 
 interface FriendRequestResponse {
   success: boolean;
@@ -49,5 +51,31 @@ export class FriendService {
         return throwError(() => new Error(errorMessage));
       })
     );
+  }
+
+  getFriendList(userId: string): Observable<FriendListDetails[]> {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      return throwError(() => new Error('Authentication token not found'));
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<FriendListDetails[]>(`${this.baseUrl}/UserRelationships/get-friends/${userId}`, { headers });
+  }
+
+  removeFriend(friendId: string): Observable<FriendRequestResponse> {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      return throwError(() => new Error('Authentication token not found'));
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/UserRelationships/remove-friend/${friendId}`, { headers });
   }
 }

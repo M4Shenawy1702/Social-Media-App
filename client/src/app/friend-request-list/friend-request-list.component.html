@@ -16,18 +16,24 @@
   @if (!isLoading && friendRequests.length > 0) {
     <div class="requests-grid">
       @for (request of friendRequests; track request.id) {
-        <div class="request-card">
+        <div
+          class="request-card"
+          [routerLink]="['/main-layout/profile', request.friendId]"
+          style="cursor: pointer;"
+          tabindex="0"
+          role="button"
+          (click)="$event.stopPropagation()"
+        >
           <img
             class="avatar"
-            [src]="request.profilePictureUrl || 'assets/images/default-avatar.png'"
-            alt="{{ request.initiatorName }}"
+            [src]="request.profilePictureUrl ? baseUrl + request.profilePictureUrl : 'assets/images/default-avatar.png'"
+            alt="{{ request.friendName }}"
           />
           <div class="info">
-            <h3>{{ request.initiatorName }}</h3>
-            <p class="status">Status: {{ request.status }}</p>
-            <p class="date">Sent on: {{ request.createdAt | date:'mediumDate' }}</p>
+            <h3>{{ request.friendName }}</h3>
+            <p>Sent From: {{ getTimeAgo(request.createdAt) }}</p>
           </div>
-          <div class="actions">
+          <div class="actions" (click)="$event.stopPropagation()">
             <button (click)="respondToRequest(request.id, true)" class="accept">Accept</button>
             <button (click)="respondToRequest(request.id, false)" class="reject">Reject</button>
           </div>

@@ -5,6 +5,6 @@ using System.Threading.Tasks;
 
 namespace API.Shared.Exceptions
 {
-    public class PostNotFoundException(int id)
-    : Exception($"Post with is {id} was not found");
+    public class PostNotFoundException()
+    : Exception($"Post was not found");
 }

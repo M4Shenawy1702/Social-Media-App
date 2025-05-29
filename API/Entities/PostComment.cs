@@ -9,6 +9,7 @@ namespace API.Entities
         public DateTime LastUpdatedAt { get; set; } = DateTime.UtcNow;
         public int PostId { get; set; }
         public Post Post { get; set; } = null!;
-        public string? AuthorName { get; set; }
+        public string UserId { get; set; } = null!;
+        public ApplicationUser User { get; set; } = null!;
     }
 }

@@ -9,7 +9,7 @@ namespace API.Specifications
         public UserRelationshipWithIncludesSpecification(string initiatorId , string receiverId)
             : base(r =>
             ((r.InitiatorId == initiatorId && r.ReceiverId == receiverId) || (r.InitiatorId == receiverId && r.ReceiverId == initiatorId))
-            && (r.Status == RelationshipStatus.Accepted || r.Status == RelationshipStatus.Pending))
+            && (r.Status == RelationshipStatus.Accepted || r.Status == RelationshipStatus.Accepted))
         {
         AddInclude(r => r.Initiator);
         AddInclude(r => r.Receiver);

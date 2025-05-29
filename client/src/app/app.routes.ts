@@ -29,7 +29,7 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     children: [
       {
-        path: '', 
+        path: '',
         component: WelcomeComponent,
         title: 'Welcome',
       },
@@ -57,27 +57,26 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         title: 'friend-request-list',
       },
-       {
+      {
         path: 'friend-list',
         component: FriendsListComponent,
         canActivate: [AuthGuard],
         title: 'friend-list',
       },
-        {
+      {
         path: 'friend-send-list',
         component: FriendSendListComponent,
         canActivate: [AuthGuard],
         title: 'friend-send-list',
       },
-         {
+      {
         path: 'chat/:id/:name',
         component: ChatComponent,
         canActivate: [AuthGuard],
         title: 'chat',
       },
     ],
-  },  
-
+  },
   {
     path: '404',
     component: NotFoundComponent,

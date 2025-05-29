@@ -22,9 +22,6 @@ namespace API.Shared.MappingProfile
             CreateMap<PostMedia, PostMediaDetailsDto>()
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
 
-            CreateMap<PostComment, PostCommentDto>()
-                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.AuthorName)); 
-
             CreateMap<CreatePostDto, Post>()
                 .ForMember(dest => dest.Media, opt => opt.Ignore());
 

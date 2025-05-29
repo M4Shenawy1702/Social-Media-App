@@ -33,7 +33,6 @@ namespace API.Services
                     await file.CopyToAsync(stream);
                 }
 
-                // حدد نوع الملف بناءً على ContentType فقط (مثال)
                 var mediaType = file.ContentType.StartsWith("video") ? MediaType.Video : MediaType.Image;
 
                 post.Media.Add(new PostMedia
@@ -49,13 +48,12 @@ namespace API.Services
             return _mapper.Map<PostDto>(post);
         }
 
-
-        public async Task<string> DeletePostAsync(int id)
+        public async Task<string> DeletePostAsync(int id , string currentUserId)
         {
             var repo = _unitOfWork.GetRepository<Post, int>();
 
-            var post = await repo.GetAsync(id) ??
-                throw new PostNotFoundException(id);
+            var post = await repo.GetAsync(new GetPostByUserIdAndPostId(id, currentUserId)) ??
+                throw new PostNotFoundException();
 
             repo.Delete(post);
             await _unitOfWork.SaveChangesAsync();
@@ -91,7 +89,7 @@ namespace API.Services
             var repo = _unitOfWork.GetRepository<Post, int>();
 
             var post = await repo.GetAsync(new GetPostByIdSpesifications(id)) ??
-                throw new PostNotFoundException(id);
+                throw new PostNotFoundException();
 
             return _mapper.Map<PostDto>(post);
         }
@@ -101,7 +99,7 @@ namespace API.Services
             var repo = _unitOfWork.GetRepository<Post, int>();
 
             var post = await repo.GetAsync(id) ??
-                throw new PostNotFoundException(id);
+                throw new PostNotFoundException();
 
             post.Content = dto.Content;
             post.LastUpdatedAt = DateTime.UtcNow;

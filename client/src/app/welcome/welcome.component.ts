@@ -1,15 +1,15 @@
 import { AuthServiceService } from './../Services/AuthService/auth-service.service';
-import { Component, NgZone, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { PostsService } from '../Services/posts.service';
+import { PostsComponent } from "../posts/posts.component";
+import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { Post } from '../shared/Contracts/Post';
-import { PostsService } from '../Services/posts.service';
-import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
-import { CommentsService } from '../Services/comments.service';
-
+import { CurrentUser } from '../shared/Contracts/CurrentUser';
 
 declare const bootstrap: any;
 
@@ -18,64 +18,37 @@ declare const bootstrap: any;
   standalone: true,
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
-  imports: [CommonModule, NgbModule, RouterModule, FormsModule],
+  imports: [CommonModule, NgbModule, RouterModule, FormsModule, PostsComponent],
 })
 export class WelcomeComponent implements OnInit {
   baseUrl = 'http://localhost:5043/';
   isLoading = false;
   errorMessage = '';
   postContent: string = '';
-  commentContents: { [postId: number]: string } = {};
   selectedFiles: File[] = [];
-
   CurrentUserId: string | null = null;
 
   posts: PagenatedResult<Post> = {
-    data: [],
-    count: 0,
-    pageIndex: 1,
-    pageSize: 10
-  };
-
-  queryParams: PostQueryParameters = {
     pageIndex: 1,
     pageSize: 10,
-    search: '',
-    userId: ''
+    count: 0,
+    data: []
   };
-
-
+  user: CurrentUser = {} as CurrentUser;
   constructor(
     private postsService: PostsService,
-    private authService: AuthServiceService,
-    private commentservice: CommentsService,
+    private authService: AuthServiceService
   ) { }
 
   ngOnInit(): void {
     this.CurrentUserId = this.authService.getCurrentUserId();
-   
     this.loadPosts();
+    this.loadUser()
   }
-
-  loadPosts(): void {
-    this.isLoading = true;
-    this.postsService.getAllPosts(this.queryParams).subscribe({
-      next: (response) => {
-        this.posts = response;
-          
-        this.queryParams.pageIndex = response.pageIndex;
-        this.queryParams.pageSize = response.pageSize;
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.message || 'Failed to load posts.';
-        console.error(err);
-      }
-    });
+  loadUser() {
+    const userData = localStorage.getItem('user');
+    this.user = userData ? JSON.parse(userData) : ({} as CurrentUser);
   }
-
   createPost(): void {
     if (!this.postContent.trim() || !this.CurrentUserId) {
       this.errorMessage = 'Post content is required.';
@@ -94,12 +67,12 @@ export class WelcomeComponent implements OnInit {
       next: () => {
         this.postContent = '';
         this.selectedFiles = [];
-        this.loadPosts();
         const modalEl = document.getElementById('createPostModal');
         if (modalEl) {
           const modal = bootstrap.Modal.getInstance(modalEl);
           modal?.hide();
         }
+        this.loadPosts();
       },
       error: (err) => {
         this.errorMessage = err.message || 'Failed to create post.';
@@ -108,69 +81,32 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
+  loadPosts() {
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    const params: PostQueryParameters = {
+      pageIndex: this.posts.pageIndex,
+      pageSize: this.posts.pageSize,
+      // يمكن تضيف فلاتر إضافية هنا
+    };
+
+    this.postsService.getAllPosts(params).subscribe({
+      next: (data) => {
+        this.posts = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'حدث خطأ في تحميل البوستات.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   handleFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       this.selectedFiles = Array.from(input.files);
     }
-  }
-
-  onLike(post: Post): void {
-    const wasLiked = post.isLiked;
-
-    this.postsService.onLike(post.id).subscribe({
-      next: () => {
-        const updatedPost = {
-          ...post,
-          isLiked: !wasLiked,
-          likes: post.likes + (wasLiked ? -1 : 1)
-        };
-
-        this.posts.data = this.posts.data.map(p =>
-          p.id === post.id ? updatedPost : p
-        );
-
-      },
-      error: (error) => {
-        console.error('Error liking post:', error);
-      }
-    });
-  }
-
-  addComment(postId: number): void {
-    if (!this.commentContents[postId] || !this.commentContents[postId].trim() || !this.CurrentUserId) {
-      this.errorMessage = 'Post content is required.';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('Content', this.commentContents[postId]);
-    formData.append('AuthorId', this.CurrentUserId);
-    formData.append('PostId', postId.toString());
-
-    this.commentservice.addComment(formData).subscribe({
-      next: (newComment) => {
-        const post = this.posts.data.find(p => p.id === postId);
-        if (post) {
-          console.log(newComment);
-          post.comments = [...post.comments, newComment];
-        }
-        this.commentContents[postId] = '';
-      },
-      error: (error) => {
-        console.error('Error adding comment:', error);
-      }
-    });
-  }
-  onPageChange(page: number): void {
-    this.queryParams.pageIndex = page;
-    this.loadPosts();
-  }
-  isVideo(url: string): boolean {
-    return /\.(mp4|webm|ogg)$/i.test(url);
-  }
-  isImage(url: string): boolean {
-    return /\.(jpeg|jpg|png|gif|bmp|svg)$/i.test(url);
   }
 }

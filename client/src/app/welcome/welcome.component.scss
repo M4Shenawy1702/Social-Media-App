@@ -1,0 +1,26 @@
+/* You can add this to your global styles or inline style */
+.create-post-wrapper,
+.posts-list-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-post-wrapper {
+  margin-bottom: 2rem;
+}
+
+.posts-list-wrapper {
+  margin-top: 1rem;
+}
+
+.create-post-wrapper,
+.posts-list-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.container {
+  min-height: 100vh;
+  display: block; 
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}

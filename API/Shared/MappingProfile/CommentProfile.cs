@@ -9,7 +9,9 @@ namespace API.Helpers
     {
         public CommentProfile()
         {
-            CreateMap<PostComment, CommentDto>();
+            CreateMap<PostComment, CommentDto>()
+                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.User.DisplayName))
+                .ForMember(dest => dest.AuthorImageUrl, opt => opt.MapFrom(src => src.User.ProfilePictureUrl));
             CreateMap<CreateCommentDto, PostComment>();
             CreateMap<UpdateCommentDto, PostComment>();
              CreateMap<PostComment, PostCommentDto>(); 

@@ -6,6 +6,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PostsController(IPostService _postService) : ControllerBase
     {
         [HttpPost]
@@ -42,7 +43,10 @@ namespace API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<string>> DeletePost(int id)
         {
-            var message = await _postService.DeletePostAsync(id);
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var message = await _postService.DeletePostAsync(id, currentUserId);
             return Ok(new { message });
         }
     }

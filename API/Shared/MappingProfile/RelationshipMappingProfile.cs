@@ -8,6 +8,7 @@ namespace API.Helpers.MappingProfiles
     {
         public RelationshipMappingProfile()
         {
+
         }
     }
 }

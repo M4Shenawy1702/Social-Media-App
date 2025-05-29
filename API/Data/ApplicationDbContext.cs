@@ -53,6 +53,28 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany(p => p.Likes)
             .HasForeignKey(l => l.PostId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Prevent cascade delete for PostComment → User
+        builder.Entity<PostComment>()
+            .HasOne(pc => pc.User)
+            .WithMany()
+            .HasForeignKey(pc => pc.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Allow cascade delete for Post → PostComment (optional and safe)
+        builder.Entity<PostComment>()
+            .HasOne(pc => pc.Post)
+            .WithMany(p => p.Comments)
+            .HasForeignKey(pc => pc.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // You can keep cascade delete for Post → Author if needed,
+        // but beware if Post has other cascades (e.g., Media, Likes)
+        builder.Entity<Post>()
+            .HasOne(p => p.Author)
+            .WithMany(u => u.Posts)
+            .HasForeignKey(p => p.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<UserRelationship> UserRelationships { get; set; }

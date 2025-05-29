@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Services
 {
-    public class UserRelationshipService(IUnitOfWork _unitOfWork, IMapper _mapper ,UserManager<ApplicationUser> _userManager) 
+    public class UserRelationshipService(IUnitOfWork _unitOfWork, IMapper _mapper, UserManager<ApplicationUser> _userManager)
     : IUserRelationshipService
     {
         public async Task SendFriendRequestAsync(string initiatorId, string receiverId)
@@ -11,9 +11,9 @@ namespace API.Services
             if (initiatorId == receiverId)
                 throw new ServiceException(400, "You cannot send a request to yourself.");
 
-            var initiator = await _userManager.FindByIdAsync(initiatorId)??
+            var initiator = await _userManager.FindByIdAsync(initiatorId) ??
                 throw new UserNotFoundException(initiatorId);
-            var receiver = await _userManager.FindByIdAsync(receiverId)??
+            var receiver = await _userManager.FindByIdAsync(receiverId) ??
                 throw new UserNotFoundException(receiverId);
 
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
@@ -77,7 +77,7 @@ namespace API.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<List<FreindRequestDetailsDto>> GetFriendsAsync(string userId)
+        public async Task<List<FriendRequestDetailsDto>> GetFriendsAsync(string userId)
         {
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
             var relationships = await repo.GetAllAsync(new UserRelationshipWithIncludesSpecification(userId));
@@ -88,13 +88,12 @@ namespace API.Services
                     var isUserInitiator = r.InitiatorId == userId;
                     var friend = isUserInitiator ? r.Receiver : r.Initiator;
 
-                    return new FreindRequestDetailsDto
+                    return new FriendRequestDetailsDto
                     {
                         Id = r.Id,
                         FriendName = friend.DisplayName,
                         ProfilePictureUrl = friend.ProfilePictureUrl ?? string.Empty,
-                        Status = r.Status,
-                        CreatedAt = r.CreatedAt
+                        FriendId = friend.Id ?? string.Empty
                     };
                 })
                 .ToList();
@@ -108,25 +107,59 @@ namespace API.Services
             var relationship = await repo.GetAsync(new UserRelationshipWithIncludesSpecification(userId, friendId));
 
             if (relationship == null || relationship.Status != RelationshipStatus.Accepted)
-                throw new ServiceException(404, "Friendship not found or already removed.");
+                throw new ServiceException(404, "Friendship not found or already removed or not accepted yet.");
 
             repo.Delete(relationship);
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<List<FreindRequestDetailsDto>> GetReceivedRequestsAsync(string userId)
+        public async Task<List<FriendReceivedRequestDetailsDto>> GetReceivedRequestsAsync(string userId)
         {
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
             var requests = await repo.GetAllAsync(new ReceivedFriendRequestsSpecification(userId));
-            return _mapper.Map<List<FreindRequestDetailsDto>>(requests);
+
+
+            var receivedRequestDtos = requests
+               .Select(r =>
+               {
+                   var isUserInitiator = r.InitiatorId == userId;
+                   var friend = isUserInitiator ? r.Receiver : r.Initiator;
+
+                   return new FriendReceivedRequestDetailsDto
+                   {
+                       Id = r.Id,
+                       FriendName = friend.DisplayName,
+                       ProfilePictureUrl = friend.ProfilePictureUrl ?? string.Empty,
+                       CreatedAt =r.CreatedAt,
+                       FriendId = friend.Id
+                   };
+               })
+               .ToList();
+
+            return receivedRequestDtos;
         }
 
-        public async Task<List<UserDetailsDto>> GetSentRequestsAsync(string userId)
+        public async Task<List<FriendRequestDetailsDto>> GetSentRequestsAsync(string userId)
         {
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
             var requests = await repo.GetAllAsync(new SentFriendRequestsSpecification(userId));
-            var receivers = requests.Select(r => r.Receiver).ToList();
-            return _mapper.Map<List<UserDetailsDto>>(receivers);
+
+            var SentRequestsDtos = requests
+                .Select(r =>
+                {
+                    var isUserInitiator = r.InitiatorId == userId;
+                    var friend = isUserInitiator ? r.Receiver : r.Initiator;
+
+                    return new FriendRequestDetailsDto
+                    {
+                        Id = r.Id,
+                        FriendName = friend.DisplayName,
+                        ProfilePictureUrl = friend.ProfilePictureUrl ?? string.Empty
+                    };
+                })
+                .ToList();
+
+            return SentRequestsDtos;
         }
     }
 }

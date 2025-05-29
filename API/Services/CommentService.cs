@@ -18,13 +18,13 @@ namespace API.Services
 
             var postRepo = _unitOfWork.GetRepository<Post, int>();
             var post = await postRepo.GetAsync(dto.PostId) ??
-                throw new PostNotFoundException(dto.PostId);
+                throw new PostNotFoundException();
 
             var commentRepo = _unitOfWork.GetRepository<PostComment, int>();
             var comment = new PostComment
             {
+                UserId = dto.AuthorId,
                 Content = dto.Content,
-                AuthorName = user.DisplayName,
                 PostId = post.Id,
                 LastUpdatedAt = DateTime.UtcNow,
             };
@@ -50,7 +50,7 @@ namespace API.Services
         {
             var postRepo = _unitOfWork.GetRepository<Post, int>();
             var post = await postRepo.GetAsync(postId) ??
-                throw new PostNotFoundException(postId);
+                throw new PostNotFoundException();
 
             var commentRepo = _unitOfWork.GetRepository<PostComment, int>();
             var comment = await commentRepo.GetAllAsync(new GetCommentsByPostIdSepcification(postId));
@@ -66,7 +66,7 @@ namespace API.Services
 
             var postRepo = _unitOfWork.GetRepository<Post, int>();
             var post = await postRepo.GetAsync(dto.PostId) ??
-                throw new PostNotFoundException(dto.PostId);
+                throw new PostNotFoundException();
 
             var commentRepo = _unitOfWork.GetRepository<PostComment, int>();
             var comment = await commentRepo.GetAsync(id) ??

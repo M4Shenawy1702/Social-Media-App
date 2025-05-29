@@ -14,9 +14,9 @@ public interface IUserRelationshipService
     Task DeclineFriendRequestAsync(int relationshipId);
     Task CancelFriendRequestAsync(int relationshipId);
     Task RemoveFriendAsync(string userId, string friendId);
-    Task<List<FreindRequestDetailsDto>> GetFriendsAsync(string userId);
-    Task<List<FreindRequestDetailsDto>> GetReceivedRequestsAsync(string userId);
-    Task<List<UserDetailsDto>> GetSentRequestsAsync(string userId);
+    Task<List<FriendRequestDetailsDto>> GetFriendsAsync(string userId);
+    Task<List<FriendReceivedRequestDetailsDto>> GetReceivedRequestsAsync(string userId);
+    Task<List<FriendRequestDetailsDto>> GetSentRequestsAsync(string userId);
 }
 
 }

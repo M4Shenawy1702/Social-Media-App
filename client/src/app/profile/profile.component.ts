@@ -10,11 +10,12 @@ import { UserProfile } from '../shared/Contracts/UserProfile';
 import { Post } from '../shared/Contracts/Post';
 import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
+import { PostsComponent } from "../posts/posts.component";
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PostsComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })

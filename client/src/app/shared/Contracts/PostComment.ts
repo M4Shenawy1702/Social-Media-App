@@ -3,4 +3,5 @@ export interface PostComment {
     content: string;
     authorName: string;
     lastUpdatedAt: Date;
+    authorImageUrl ?: string;
 }

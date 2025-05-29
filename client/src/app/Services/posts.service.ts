@@ -50,4 +50,18 @@ export class PostsService {
     return this.http.post(`${this.baseUrl}api/Likes/${postId}`, {}, { headers, responseType: 'text' });
   }
 
+  deletePost(postId: number): Observable<any> {
+    const token = localStorage.getItem('jwtToken') || '';
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.delete(`${this.baseUrl}api/Posts/${postId}`, { headers, responseType: 'text' });
+  }
+
+  getPost(postId: number): Observable<Post> {
+    const token = localStorage.getItem('jwtToken') || '';
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<Post>(`${this.baseUrl}api/Posts/${postId}`, { headers });
+  }
+
 }

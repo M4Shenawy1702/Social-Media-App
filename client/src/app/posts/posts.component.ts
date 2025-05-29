@@ -1,135 +1,109 @@
-import { AuthServiceService } from './../Services/AuthService/auth-service.service';
-import { Component, NgZone, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RouterModule } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { Post } from '../shared/Contracts/Post';
 import { PostsService } from '../Services/posts.service';
-import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
 import { CommentsService } from '../Services/comments.service';
+import { AuthServiceService } from '../Services/AuthService/auth-service.service';
+import  Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 
-declare const bootstrap: any;
 
 @Component({
-  selector: 'app-Posts',
+  selector: 'app-posts',
   standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './posts.component.html',
-  styleUrls: ['./posts.component.scss'],
-  imports: [CommonModule, NgbModule, RouterModule, FormsModule],
+  styleUrls: ['./posts.component.scss']
 })
-export class PostsComponent implements OnInit {
+export class PostsComponent {
+
+  @Input() posts: Post[] = [];
   baseUrl = 'http://localhost:5043/';
-  isLoading = false;
-  errorMessage = '';
-  postContent: string = '';
+
   commentContents: { [postId: number]: string } = {};
-  selectedFiles: File[] = [];
-
-  CurrentUserId: string | null = null;
-
-  posts: PagenatedResult<Post> = {
-    data: [],
-    count: 0,
-    pageIndex: 1,
-    pageSize: 10
-  };
-
-  queryParams: PostQueryParameters = {
-    pageIndex: 1,
-    pageSize: 10,
-    search: '',
-    userId: ''
-  };
-
+  CurrentUserId: string | null;
 
   constructor(
-    private postsService: PostsService,
+    private postService: PostsService,
+    private commentService: CommentsService,
     private authService: AuthServiceService,
-    private commentservice: CommentsService,
-  ) { }
-
-  ngOnInit(): void {
+    private router: Router
+  ) {
     this.CurrentUserId = this.authService.getCurrentUserId();
-    this.loadPosts();
-  }
-
-  loadPosts(): void {
-    this.isLoading = true;
-    this.postsService.getAllPosts(this.queryParams).subscribe({
-      next: (response) => {
-        this.posts = response;
-          
-        this.queryParams.pageIndex = response.pageIndex;
-        this.queryParams.pageSize = response.pageSize;
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.message || 'Failed to load posts.';
-        console.error(err);
-      }
-    });
   }
 
   onLike(post: Post): void {
     const wasLiked = post.isLiked;
 
-    this.postsService.onLike(post.id).subscribe({
+    this.postService.onLike(post.id).subscribe({
       next: () => {
-        const updatedPost = {
-          ...post,
-          isLiked: !wasLiked,
-          likes: post.likes + (wasLiked ? -1 : 1)
-        };
-
-        this.posts.data = this.posts.data.map(p =>
-          p.id === post.id ? updatedPost : p
-        );
-
+        post.isLiked = !wasLiked;
+        post.likes += wasLiked ? -1 : 1;
       },
-      error: (error) => {
-        console.error('Error liking post:', error);
-      }
+      error: (error) => console.error('Error liking post:', error)
     });
   }
 
   addComment(postId: number): void {
-    if (!this.commentContents[postId] || !this.commentContents[postId].trim() || !this.CurrentUserId) {
-      this.errorMessage = 'Post content is required.';
-      return;
-    }
+    const content = this.commentContents[postId]?.trim();
+    if (!content || !this.CurrentUserId) return;
 
     const formData = new FormData();
-    formData.append('Content', this.commentContents[postId]);
+    formData.append('Content', content);
     formData.append('AuthorId', this.CurrentUserId);
     formData.append('PostId', postId.toString());
 
-    this.commentservice.addComment(formData).subscribe({
+    this.commentService.addComment(formData).subscribe({
       next: (newComment) => {
-        const post = this.posts.data.find(p => p.id === postId);
-        if (post) {
-          console.log(newComment);
-          post.comments = [...post.comments, newComment];
-        }
+        const post = this.posts.find(p => p.id === postId);
+        if (post) post.comments.push(newComment);
         this.commentContents[postId] = '';
       },
-      error: (error) => {
-        console.error('Error adding comment:', error);
-      }
+      error: (error) => console.error('Error adding comment:', error)
     });
   }
-  onPageChange(page: number): void {
-    this.queryParams.pageIndex = page;
-    this.loadPosts();
-  }
-  isVideo(url: string): boolean {
-    return /\.(mp4|webm|ogg)$/i.test(url);
-  }
-  isImage(url: string): boolean {
-    return /\.(jpeg|jpg|png|gif|bmp|svg)$/i.test(url);
-  }
+  onDelete(postId: number) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this post!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Deleting...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        this.postService.deletePost(postId).subscribe({
+          next: () => {
+            this.posts = this.posts.filter(post => post.id !== postId);
+            Swal.fire('Deleted!', 'The post has been deleted.', 'success');
+          },
+          error: (error) => {
+            console.error('Error deleting post:', error);
+            Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+          }
+        });
+      }
+    }); 
+}
+onPageChange(newPage: number) {
+  // كود تغيير الصفحة أو إرسال الحدث للأب
+}
+
+isVideo(url: string): boolean {
+  return /\.(mp4|webm|ogg)$/i.test(url);
+}
+
+isImage(url: string): boolean {
+  return /\.(jpeg|jpg|png|gif|bmp|svg)$/i.test(url);
+}
 }

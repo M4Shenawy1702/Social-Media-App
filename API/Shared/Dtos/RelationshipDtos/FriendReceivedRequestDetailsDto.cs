@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace API.Shared.Dtos.RelationshipDtos
 {
-    public class FriendRequestDetailsDto
+    public class FriendReceivedRequestDetailsDto
     {
+
         public int Id { get; set; }
 
         public string FriendName { get; set; } = null!;
@@ -14,5 +15,8 @@ namespace API.Shared.Dtos.RelationshipDtos
         public string ProfilePictureUrl { get; set; } = null!;
 
         public string FriendId { get; set; } = null!;
+
+        public DateTime  CreatedAt { get; set; } 
+
     }
 }

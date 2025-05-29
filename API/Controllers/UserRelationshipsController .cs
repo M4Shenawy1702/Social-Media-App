@@ -57,8 +57,8 @@ namespace API.Controllers
         }
 
         // Remove Friend
-        [HttpPost("remove-friend/{friendId}")]
-        public async Task<IActionResult> RemoveFriend([FromQuery] string friendId)
+        [HttpDelete("remove-friend/{friendId}")]
+        public async Task<IActionResult> RemoveFriend([FromRoute] string friendId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _userRelationshipService.RemoveFriendAsync(userId!, friendId);
@@ -67,7 +67,7 @@ namespace API.Controllers
 
         // Get Received Friend Requests
         [HttpGet("get-received-requests/{userId}")]
-        public async Task<ActionResult<IEnumerable<FreindRequestDetailsDto>>> GetReceivedRequests(string userId)
+        public async Task<ActionResult<IEnumerable<FriendRequestDetailsDto>>> GetReceivedRequests(string userId)
         {
             var receivedRequests = await _userRelationshipService.GetReceivedRequestsAsync(userId);
             return Ok(receivedRequests);

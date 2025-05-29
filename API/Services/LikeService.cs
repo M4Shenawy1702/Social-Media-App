@@ -17,7 +17,7 @@ namespace API.Services
 
             var postRepo = _unitOfWork.GetRepository<Post, int>();
             var post = await postRepo.GetAsync(postId) ??
-                throw new PostNotFoundException(postId);
+                throw new PostNotFoundException();
 
             var likeRepo = _unitOfWork.GetRepository<Like, int>();
             var existingLike = await likeRepo.GetAsync(new GetLikeSpecifications(userId, postId));
@@ -56,17 +56,7 @@ namespace API.Services
             return like != null;
         }
 
-        // public async Task<bool> RemoveLikeAsync(string userId, int postId)
-        // {
-        //     var likeRepo = _unitOfWork.GetRepository<Like, int>();
-        //     var like = await likeRepo.GetAsync(new GetLikeSpecifications(userId, postId)) ??
-        //         throw new LikeNotFoundException();
 
-        //     likeRepo.Delete(like);
-        //     await _unitOfWork.SaveChangesAsync();
-
-        //     return true;
-        // }
 
     }
 }

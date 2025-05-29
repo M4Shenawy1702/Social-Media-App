@@ -1,31 +1,33 @@
-<!-- No posts message -->
-  <div *ngIf="!isLoading && !errorMessage && posts.data.length === 0" class="alert alert-info mt-3 text-center">
+<!-- Wrapper container to center and limit width -->
+<div class="d-flex flex-column align-items-center w-100" style="max-width: 600px; margin: 0 auto;">
+
+  <!-- No posts message -->
+  <div *ngIf="posts.length === 0" class="alert alert-info mt-3 text-center w-100">
     No posts found.
   </div>
 
   <!-- Posts list -->
-  <div *ngIf="!isLoading && !errorMessage && posts.data.length > 0" class="w-100" style="max-width: 600px;">
-    <div *ngFor="let post of posts.data" class="card mb-4">
+  <div *ngIf="posts.length > 0" class="w-100">
+    <div *ngFor="let post of posts" class="card mb-4">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2">
           <img [src]="baseUrl + post.authorImageUrl" alt="{{ post.authorName }} profile image"
             class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
           <h5 class="mb-0">{{ post.authorName }}</h5>
-          <div class="dropdown ms-auto">
+          <div *ngIf="CurrentUserId === post.authorId" class="dropdown ms-auto">
             <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#"
               [id]="'userDropdown' + post.id" role="button" data-bs-toggle="dropdown" aria-expanded="false"
               (click)="$event.preventDefault()">
-              <p class="mb-0 fw-bold text-body pe-2 ">...</p>
+              <p class="mb-0 fw-bold text-body pe-2">...</p>
             </a>
-
             <ul class="dropdown-menu dropdown-menu-end text-small shadow"
               [attr.aria-labelledby]="'userDropdown' + post.id">
-              <li><a [routerLink]="['/main-layout/editPost' , post.id]" class="dropdown-item"><i
-                    class="bi bi-pencil-square me-1"></i> Edit Post</a></li>
+              <li><a [routerLink]="['/main-layout/editPost', post.id]" class="dropdown-item">
+                  <i class="bi bi-pencil-square me-1"></i> Edit Post</a></li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
-              <li><a (click)="deletePost(post.id)" class="dropdown-item text-danger">Delete</a></li>
+              <li><a (click)="onDelete(post.id)" class="dropdown-item text-danger">Delete</a></li>
             </ul>
           </div>
         </div>
@@ -35,31 +37,19 @@
       <!-- Post media -->
       <div *ngIf="post.media && post.media.length > 0">
         <ng-container *ngFor="let media of post.media">
-          <img *ngIf="isImage(media.url)" [src]="baseUrl + media.url" class="card-img-top object-fit-cover mb-2"
-            style="height: 180px" [alt]="post.authorName + ' post image'">
-
-          <video *ngIf="isVideo(media.url)" [src]="baseUrl + media.url" class="w-100 mb-2" style="height: 200px;"
-            controls>
+          <img *ngIf="media.url && isImage(media.url)" [src]="baseUrl + media.url"
+            class="card-img-top object-fit-cover mb-2" style="height: 180px" [alt]="post.authorName + ' post image'" />
+          <video *ngIf="media.url && isVideo(media.url)" [src]="baseUrl + media.url" class="w-100 mb-2"
+            style="height: 200px;" controls>
             Your browser does not support the video tag.
           </video>
         </ng-container>
       </div>
 
-      <!-- Comments
-      <ul class="list-group list-group-flush">
-        <li *ngFor="let comment of post.comments" class="list-group-item">
-          <strong>{{ comment.authorName }}:</strong> {{ comment.content }}<br />
-          <small class="text-muted">{{ comment.createdAt | date:'medium' }}</small>
-        </li>
-        <li *ngIf="!post.comments || post.comments.length === 0" class="list-group-item">
-          No comments yet.
-        </li>
-      </ul> -->
-
       <!-- Likes and Comments status -->
       <div class="card-body d-flex justify-content-between align-items-center">
         <p class="mb-0 fw-bold">{{ post.likes }} Likes</p>
-        <p class="mb-0 fw-bold"> {{ post.comments.length }} Comments</p>
+        <p class="mb-0 fw-bold">{{ post.comments.length }} Comments</p>
       </div>
 
       <!-- Likes and Comments icons -->
@@ -75,10 +65,11 @@
       </div>
     </div>
 
-    <!-- Comments Modal for each post -->
-    <div *ngFor="let post of posts.data" class="modal fade" [id]="'AddCommentModal' + post.id" tabindex="-1"
+    <!-- Modal Modal for each post -->
+    <div *ngFor="let post of posts" class="modal fade" [id]="'AddCommentModal' + post.id" tabindex="-1"
       [attr.aria-labelledby]="'commentModalLabel' + post.id" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <!-- wider modal for split layout -->
         <div class="modal-content d-flex flex-column" style="height: 80vh;">
 
           <div class="modal-header border-0 pb-0">
@@ -86,49 +77,85 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-          <!-- Modal body: flex-grow 1 + scrollable comments -->
-          <div class="modal-body flex-grow-1 overflow-auto" style="padding-bottom: 0;">
-            <ul id="commentsList-{{post.id}}" class="list-group list-group-flush">
-              <li *ngFor="let comment of post.comments" class="list-group-item d-flex gap-3 align-items-start"
-                style="border-bottom: 1px solid #eee; transition: background-color 0.2s;">
-                <img [src]="comment.authorImageUrl || 'assets/default-user.png'" alt="{{ comment.authorName }}"
-                  class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
-                <div>
+          <!-- Modal body: two columns - left for media (full size), right for author + content + comments -->
+          <div class="modal-body flex-grow-1 overflow-hidden p-0 d-flex" style="gap: 1rem; height: 100%;">
+
+            <!-- Left: Post media full size -->
+            <div class="flex-grow-1 border-end"
+              style="max-width: 60%; height: 100%; display: flex; align-items: center; justify-content: center;">
+              <ng-container *ngIf="post.media && post.media.length > 0; else noMedia">
+                <ng-container *ngFor="let media of post.media">
+                  <img *ngIf="isImage(media.url)" [src]="baseUrl + media.url" alt="post image"
+                    style="width: 100%; height: 100%; object-fit: contain;" />
+                  <video *ngIf="isVideo(media.url)" [src]="baseUrl + media.url" controls
+                    style="width: 100%; height: 100%; object-fit: contain;"></video>
+                </ng-container>
+              </ng-container>
+              <ng-template #noMedia>
+                <p class="text-muted">No media available</p>
+              </ng-template>
+            </div>
+
+            <!-- Right: Author info, post content, separator, comments -->
+            <div class="d-flex flex-column" style="width: 40%; max-width: 40%; height: 100%;">
+
+              <!-- Author info at top -->
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <img [src]="post.authorImageUrl ? baseUrl + post.authorImageUrl : 'assets/default-profile.png'"
+                  alt="{{ post.authorName }}" class="rounded-circle" width="50" height="50"
+                  style="object-fit: cover;" />
+                <h5 class="mb-0">{{ post.authorName }}</h5>
+              </div>
+
+              <!-- Post content below author info -->
+              <div class="mb-3" style="overflow-y: auto; max-height: 120px;">
+                <p>{{ post.content }}</p>
+              </div>
+
+              <!-- Separator -->
+              <hr style="margin: 0 0 0.5rem 0; border-color: #ddd;" />
+
+              <!-- Comments list, scrollable -->
+              <ul id="commentsList-{{post.id}}" class="list-group list-group-flush flex-grow-1 overflow-auto mb-2"
+                style="min-height: 0;">
+                <li *ngFor="let comment of post.comments" class="list-group-item d-flex gap-3 align-items-start"
+                  style="border-bottom: 1px solid #eee; transition: background-color 0.2s;">
+                  <img [src]="comment.authorImageUrl ? baseUrl + comment.authorImageUrl : 'assets/default-profile.png'"
+                    alt="{{ comment.authorName }}" class="rounded-circle" width="40" height="40"
+                    style="object-fit: cover;" />
                   <div>
-                    <strong>{{ comment.authorName }}</strong>
-                    <small class="text-muted ms-2" style="font-size: 0.8rem;">
-                      {{ comment.lastUpdatedAt | date:'short' }}
-                    </small>
+                    <div>
+                      <strong>{{ comment.authorName }}</strong>
+                      <small class="text-muted ms-2" style="font-size: 0.8rem;">
+                        {{ comment.lastUpdatedAt | date:'short' }}
+                      </small>
+                    </div>
+                    <div>{{ comment.content }}</div>
                   </div>
-                  <div>{{ comment.content }}</div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+
+              <!-- Comment input fixed footer -->
+              <div class="modal-footer d-flex align-items-center gap-2 p-2 mt-auto"
+                style="background-color: #f0f2f5; border-top: 1px solid #ddd;">
+                <input type="text" class="form-control rounded-pill" placeholder="Write a comment..."
+                  [(ngModel)]="commentContents[post.id]"
+                  style="padding: 10px 20px; border: none; box-shadow: inset 0 0 5px #ccc;" />
+                <button type="button"
+                  class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center"
+                  style="width: 36px; height: 36px; padding: 0;" (click)="addComment(post.id)"
+                  [disabled]="!commentContents[post.id]?.trim()">
+                  <i class="bi bi-chat-fill" style="font-size: 18px;"></i>
+                </button>
+              </div>
+
+            </div>
+
           </div>
 
-          <!-- Modal footer fixed with input + button -->
-          <div class="modal-footer d-flex align-items-center gap-2 p-2"
-            style="background-color: #f0f2f5; border-top: 1px solid #ddd;">
-            <div class="flex-grow-1">
-              <input type="text" class="form-control rounded-pill" placeholder="Write a comment..."
-                [(ngModel)]="commentContents[post.id]"
-                style="padding: 10px 20px; border: none; box-shadow: inset 0 0 5px #ccc;" />
-            </div>
-            <button type="button"
-              class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center"
-              style="width: 36px; height: 36px; padding: 0;" (click)="addComment(post.id)"
-              [disabled]="!commentContents[post.id]?.trim()">
-              <i class="bi bi-chat-fill" style="font-size: 18px;"></i>
-            </button>
-          </div>
         </div>
       </div>
     </div>
-    <!-- Pagination -->
-    <nav *ngIf="posts.count > posts.pageSize" class="d-flex justify-content-center mt-4">
-      <ngb-pagination [collectionSize]="posts.count" [page]="queryParams.pageIndex" [pageSize]="queryParams.pageSize"
-        [maxSize]="5" [rotate]="true" [ellipses]="false" [boundaryLinks]="true" (pageChange)="onPageChange($event)">
-      </ngb-pagination>
-    </nav>
-
   </div>
+
+</div>

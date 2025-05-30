@@ -21,39 +21,50 @@
   <!-- Users cards -->
   @if (!isLoading && !errorMessage && users.data.length > 0) {
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
-     @for (user of users.data; track user.id) {
+      @for (user of users.data; track user.id) {
         <div class="col">
           <div class="card h-100">
-            @if (user.profilePictureUrl) {
-              <img [src]="baseUrl + user.profilePictureUrl"
-                   class="card-img-top object-fit-cover" 
-                   style="height: 180px" 
-                   [alt]="user.userName + '\'s profile photo'">
-            } @else {
-              <div class="card-img-top bg-primary text-white d-flex align-items-center justify-content-center" 
-                   style="height: 180px">
-                <span class="display-4">{{user.userName | slice:0:1 | uppercase}}</span>
-              </div>
-            }
 
-            <div class="card-body">
-              <h5 class="card-title">{{user.userName}}</h5>
-              <div class="card-text">
-                <p class="mb-1">
-                  <i class="bi bi-envelope me-2"></i>
-                  {{user.email || 'No email provided'}}
-                </p>
-                <p class="mb-0">
-                  <i class="bi bi-telephone me-2"></i>
-                  {{user.phoneNumber || 'No phone number'}}
-                </p>
+            <!-- Entire top of card navigates -->
+            <div style="cursor: pointer;"
+                 [routerLink]="['/main-layout/profile', user.id]"
+                 class="text-decoration-none text-dark">
+
+              @if (user.profilePictureUrl) {
+                <img [src]="baseUrl + user.profilePictureUrl"
+                     class="card-img-top object-fit-cover"
+                     style="height: 180px"
+                     [alt]="user.userName + '\'s profile photo'">
+              } @else {
+                <div class="card-img-top bg-primary text-white d-flex align-items-center justify-content-center"
+                     style="height: 180px">
+                  <span class="display-4">{{ user.userName | slice:0:1 | uppercase }}</span>
+                </div>
+              }
+
+              <div class="card-body">
+                <h5 class="card-title">{{ user.userName }}</h5>
+                <div class="card-text">
+                  <p class="mb-1">
+                    <i class="bi bi-envelope me-2"></i>
+                    {{ user.email || 'No email provided' }}
+                  </p>
+                  <p class="mb-0">
+                    <i class="bi bi-telephone me-2"></i>
+                    {{ user.phoneNumber || 'No phone number' }}
+                  </p>
+                </div>
               </div>
             </div>
+
+            <!-- Separate Button (does not route) -->
             <div class="card-footer bg-transparent">
-              <a [routerLink]="['/main-layout/profile', user.id]" class="btn btn-outline-primary w-100">
-                View Profile
-              </a>
+              <button class="btn btn-outline-primary w-100"
+                      (click)="onAddFriend(user.id)">
+                Add Friend
+              </button>
             </div>
+
           </div>
         </div>
       }

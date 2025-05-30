@@ -15,43 +15,42 @@
   </div>
 
   <!-- Users cards -->
-  <div *ngIf="!isLoading && !errorMessage && friendList.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
+  <div *ngIf="!isLoading && !errorMessage && friendList.length > 0"
+       class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
     <div *ngFor="let friend of friendList; trackBy: trackByFriendId" class="col">
-      <div 
-        class="card h-100" 
-        [routerLink]="['/main-layout/profile', friend.friendId]"
-          style="cursor: pointer;"
-          tabindex="0"
-          role="button"
-          (click)="$event.stopPropagation()"
-      >
-        <img *ngIf="friend.profilePictureUrl; else defaultImg"
-          [src]="baseUrl + friend.profilePictureUrl"
-          class="card-img-top object-fit-cover"
-          style="height: 180px"
-          [alt]="friend.FriendName + '\'s profile photo'">
-        <ng-template #defaultImg>
-          <img
-            src="assets/default-profile.png"
-            class="card-img-top object-fit-cover"
-            style="height: 180px"
-            [alt]="friend.friendName + '\'s profile photo'">
-        </ng-template>
+      <div class="card h-100" tabindex="0" role="button" (click)="$event.stopPropagation()">
 
-        <div class="card-body">
-          <h5 class="card-title">{{ friend.friendName }}</h5>
+        <!-- Clickable area for routing -->
+        <div [routerLink]="['/main-layout/profile', friend.friendId]" style="cursor: pointer;" class="card-body text-decoration-none text-dark">
+          <img *ngIf="friend.profilePictureUrl; else defaultImg"
+               [src]="baseUrl + friend.profilePictureUrl"
+               class="card-img-top object-fit-cover"
+               style="height: 180px"
+               [alt]="friend.friendName + '\'s profile photo'">
+          <ng-template #defaultImg>
+            <img src="assets/DefaultProfile.jpg"
+                 class="card-img-top object-fit-cover"
+                 style="height: 180px"
+                 [alt]="friend.friendName + '\'s profile photo'">
+          </ng-template>
+          <h5 class="card-title mt-2">{{ friend.friendName }}</h5>
         </div>
+
+        <!-- Non-clickable footer button -->
         <div class="card-footer bg-transparent">
-          <a (click)="onDeleteFriend(friend.friendId)" class="btn btn-outline-primary w-100">
+          <button (click)="onDeleteFriend(friend.friendId); $event.stopPropagation()"
+                  class="btn btn-outline-primary w-100">
             Remove Friend
-          </a>
+          </button>
         </div>
+
       </div>
     </div>
   </div>
 
   <!-- No users found -->
-  <div *ngIf="!isLoading && !errorMessage && friendList.length === 0" class="d-flex justify-content-center align-items-center vh-100">
+  <div *ngIf="!isLoading && !errorMessage && friendList.length === 0"
+       class="d-flex justify-content-center align-items-center vh-100">
     <div class="alert alert-info text-center">
       No users found
     </div>

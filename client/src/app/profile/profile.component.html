@@ -12,7 +12,7 @@
             <div class="position-absolute" style="bottom: 20px; left: 20px; z-index: 1;">
               <div class="d-flex align-items-end gap-3">
                 <img
-                  [src]="userProfile?.profilePictureUrl ? baseUrl + userProfile.profilePictureUrl : 'assets/default-profile.jpg'"
+                  [src]="userProfile?.profilePictureUrl ? baseUrl + userProfile.profilePictureUrl : 'assets/DefaultProfile.jpg'"
                   alt="Profile picture" class="rounded-circle border border-3 border-white"
                   style="width: 100px; height: 100px;">
 
@@ -35,7 +35,6 @@
               <i class="bi bi-chat-left-text me-1"></i> Message
             </a>
           </div>
-
           }
 
           <!-- Bio and Location -->
@@ -43,8 +42,7 @@
             <div class="text-body px-3">
               <p class="mb-2 text-muted">{{ userProfile?.bio || 'No bio available.' }}</p>
               <p class="mb-0 text-muted">
-                {{ userProfile?.userAddress ? userProfile.userAddress.country + ' - ' + userProfile.userAddress.city + '
-                - ' + userProfile.userAddress.street : 'Unknown location' }}
+                {{ userProfile?.userAddress ? userProfile.userAddress.country + ' - ' + userProfile.userAddress.city + ' - ' + userProfile.userAddress.street : 'Unknown location' }}
               </p>
             </div>
           </div>
@@ -52,39 +50,56 @@
           <!-- Followers / Following -->
           <div class="p-4 text-black bg-body-tertiary">
             <div class="d-flex justify-content-start align-items-center text-center text-body">
-              <div class="px-3 text-center">
+              <div class="px-3 text-center" [routerLink]="['/main-layout/friend-list']" style="cursor: pointer;" 
+             hovwer class="text-primary">
                 <p class="mb-1 h5 fw-bold">1026</p>
-                <p class="small text-muted mb-0">Followers</p>
-              </div>
-              <div class="px-3 text-center">
-                <p class="mb-1 h5 fw-bold">478</p>
-                <p class="small text-muted mb-0">Following</p>
+                <p class="small text-muted mb-0">Friend</p>
               </div>
             </div>
           </div>
 
           <!-- Profile Body -->
           <div class="card-body p-4 text-black">
-            <!-- You can put additional tabs or about info here -->
+            <!-- Optional additional profile info -->
           </div>
-          <!-- Posts Section -->
+
+          <!-- Posts/Likes Section -->
           <div class="container d-flex flex-column justify-content-center align-items-center py-5">
+
             <!-- Loading Spinner -->
             <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
               <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
               </div>
-              <span class="ms-3">Loading posts...</span>
+              <span class="ms-3">Loading content...</span>
             </div>
 
-            <!-- Error -->
+            <!-- Error Message -->
             <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3">
               {{ errorMessage }}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <!-- Posts -->
-            <app-posts [posts]="posts.data  "></app-posts>
+            <!-- Tab Buttons -->
+            <div class="d-flex justify-content-center gap-3 mt-4">
+              <button class="btn"
+                [ngClass]="{ 'btn-primary': activeTab === 'posts', 'btn-outline-primary': activeTab !== 'posts' }"
+                (click)="activeTab = 'posts'">
+                Posts
+              </button>
+              <button class="btn"
+                [ngClass]="{ 'btn-primary': activeTab === 'likes', 'btn-outline-primary': activeTab !== 'likes' }"
+                (click)="activeTab = 'likes'">
+                Likes
+              </button>
+            </div>
+
+            <!-- Conditional Content -->
+            <div class="w-100 mt-4">
+              <app-posts *ngIf="activeTab === 'posts'" [posts]="posts?.data"></app-posts>
+              <app-posts *ngIf="activeTab === 'likes'" [posts]="likedPosts"></app-posts>
+            </div>
+
           </div>
         </div>
       </div>

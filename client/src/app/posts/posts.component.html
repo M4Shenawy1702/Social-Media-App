@@ -11,23 +11,29 @@
     <div *ngFor="let post of posts" class="card mb-4">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2">
-          <img [src]="baseUrl + post.authorImageUrl" alt="{{ post.authorName }} profile image"
-            class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+          <img [src]="post.authorImageUrl ? baseUrl + post.authorImageUrl : 'assets/DefaultProfile.jpg'"
+            alt="{{ post.authorName }} profile image" class="rounded-circle me-2"
+            style="width: 40px; height: 40px; object-fit: cover;">
           <h5 class="mb-0">{{ post.authorName }}</h5>
           <div *ngIf="CurrentUserId === post.authorId" class="dropdown ms-auto">
             <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#"
               [id]="'userDropdown' + post.id" role="button" data-bs-toggle="dropdown" aria-expanded="false"
               (click)="$event.preventDefault()">
-              <p class="mb-0 fw-bold text-body pe-2">...</p>
+              <i class="bi bi-three-dots-vertical text-body"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end text-small shadow"
               [attr.aria-labelledby]="'userDropdown' + post.id">
-              <li><a [routerLink]="['/main-layout/editPost', post.id]" class="dropdown-item">
-                  <i class="bi bi-pencil-square me-1"></i> Edit Post</a></li>
+              <li>
+                <button class="dropdown-item" (click)="openEditPostModal(post)">
+                  <i class="bi bi-pencil-square me-1"></i> Edit Post
+                </button>
+              </li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
-              <li><a (click)="onDelete(post.id)" class="dropdown-item text-danger">Delete</a></li>
+              <li><a (click)="onDelete(post.id)" class="dropdown-item text-danger">
+                  <i class="bi bi-trash me-1"></i> Delete Post
+                </a></li>
             </ul>
           </div>
         </div>
@@ -47,13 +53,14 @@
       </div>
 
       <!-- Likes and Comments status -->
-      <div class="card-body d-flex justify-content-between align-items-center">
+      <div class="card-body d-flex justify-content-start align-items-center gap-3">
         <p class="mb-0 fw-bold">{{ post.likes }} Likes</p>
-        <p class="mb-0 fw-bold">{{ post.comments.length }} Comments</p>
+        <p class="mb-0 fw-bold" [attr.data-bs-target]="'#AddCommentModal' + post.id" data-bs-toggle="modal" style="cursor: pointer;">{{ post.comments.length }} Comments</p>
       </div>
 
+
       <!-- Likes and Comments icons -->
-      <div class="card-body d-flex justify-content-between align-items-center">
+      <div class="card-body d-flex justify-content-start align-items-center gap-3">
         <a href="#" class="text-danger" (click)="onLike(post); $event.preventDefault()">
           <i class="bi" [ngClass]="post.isLiked ? 'bi-heart-fill' : 'bi-heart'"></i>
         </a>
@@ -63,9 +70,10 @@
           <i class="bi bi-chat"></i>
         </a>
       </div>
+
     </div>
 
-    <!-- Modal Modal for each post -->
+    <!-- Modal for each post -->
     <div *ngFor="let post of posts" class="modal fade" [id]="'AddCommentModal' + post.id" tabindex="-1"
       [attr.aria-labelledby]="'commentModalLabel' + post.id" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -116,24 +124,59 @@
               <hr style="margin: 0 0 0.5rem 0; border-color: #ddd;" />
 
               <!-- Comments list, scrollable -->
-              <ul id="commentsList-{{post.id}}" class="list-group list-group-flush flex-grow-1 overflow-auto mb-2"
+              <ul id="commentsList-{{ post.id }}" class="list-group list-group-flush flex-grow-1 overflow-auto mb-2"
                 style="min-height: 0;">
                 <li *ngFor="let comment of post.comments" class="list-group-item d-flex gap-3 align-items-start"
                   style="border-bottom: 1px solid #eee; transition: background-color 0.2s;">
+
+                  <!-- Author Image -->
                   <img [src]="comment.authorImageUrl ? baseUrl + comment.authorImageUrl : 'assets/default-profile.png'"
                     alt="{{ comment.authorName }}" class="rounded-circle" width="40" height="40"
                     style="object-fit: cover;" />
-                  <div>
-                    <div>
-                      <strong>{{ comment.authorName }}</strong>
-                      <small class="text-muted ms-2" style="font-size: 0.8rem;">
-                        {{ comment.lastUpdatedAt | date:'short' }}
-                      </small>
+
+                  <!-- Comment Content -->
+                  <div class="flex-grow-1">
+                    <!-- Top row: author name, timestamp, and dropdown aligned horizontally -->
+                    <div class="d-flex align-items-center">
+                      <div>
+                        <strong>{{ comment.authorName }}</strong>
+                        <small class="text-muted ms-2" style="font-size: 0.8rem;">
+                          {{ comment.lastUpdatedAt | date:'short' }}
+                        </small>
+                      </div>
+
+                      <!-- Dropdown aligned to right -->
+                      <div *ngIf="CurrentUserId === comment.authorId" class="dropdown ms-auto">
+                        <a class="text-decoration-none dropdown-toggle" href="#" [id]="'commentDropdown' + comment.id"
+                          role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                          (click)="$event.preventDefault()">
+                          <i class="bi bi-three-dots-vertical text-body"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end text-small shadow"
+                          [attr.aria-labelledby]="'commentDropdown' + comment.id">
+                          <li>
+                            <button class="dropdown-item" (click)="openEditCommentModal(comment)">
+                              <i class="bi bi-pencil-square me-1"></i> Edit Comment
+                            </button>
+                          </li>
+                          <li>
+                            <hr class="dropdown-divider" />
+                          </li>
+                          <li>
+                            <button (click)="onDeleteComment(comment.id , post.id)" class="dropdown-item text-danger">
+                              <i class="bi bi-trash me-1"></i> Delete Comment
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-                    <div>{{ comment.content }}</div>
+
+                    <!-- Actual comment text -->
+                    <div class="mt-1">{{ comment.content }}</div>
                   </div>
                 </li>
               </ul>
+
 
               <!-- Comment input fixed footer -->
               <div class="modal-footer d-flex align-items-center gap-2 p-2 mt-auto"
@@ -156,6 +199,64 @@
         </div>
       </div>
     </div>
+    <!--Edit Post Modal -->
+    <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" *ngIf="selectedPost">
+            <div class="mb-3">
+              <label for="editPostContent" class="form-label">Content</label>
+              <textarea id="editPostContent" [(ngModel)]="selectedPost.content" class="form-control" rows="4">
+          </textarea>
+            </div>
+            <div class="col-6" *ngFor="let media of selectedPost.media">
+              <img *ngIf="isImage(media.url)" [src]="baseUrl + media.url" alt="Media" class="img-fluid mb-2" />
+              <video *ngIf="isVideo(media.url)" [src]=" baseUrl + media.url" controls class="w-100 mb-2"></video>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="onEditPost(selectedPost)">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Edit Comment Modal -->
+    <!-- Edit Comment Modal -->
+    <div class="modal fade" id="editCommentModal" tabindex="-1" aria-labelledby="editCommentModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="editCommentModalLabel">Edit Comment</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <form>
+            <div class="modal-body" *ngIf="selectedComment">
+              <div class="mb-3">
+                <label for="editCommentContent" class="form-label">Content</label>
+                <textarea id="editCommentContent" [(ngModel)]="selectedComment.content" name="content"
+                  class="form-control" rows="4"></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" (click)="onEditComment(selectedComment)">Save
+                Changes</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>

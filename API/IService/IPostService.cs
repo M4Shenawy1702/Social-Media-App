@@ -8,6 +8,7 @@ namespace API.Contracts
     public interface IPostService
     {
         Task<PaginatedResult<PostDto>> GetAllPostsAsync(PostQueryParameters parameters, string currentUserId);
+        Task<List<LIkedPostDto>> GetLikedPostsAsync(string currentUserId);
         Task<PostDto> GetPostByIdAsync(int id);
         Task<PostDto> CreatePostAsync(CreatePostDto dto);
         Task<string> DeletePostAsync(int id , string currentUserId);

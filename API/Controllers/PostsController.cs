@@ -25,6 +25,15 @@ namespace API.Controllers
             var posts = await _postService.GetAllPostsAsync(parameters, currentUserId);
             return Ok(posts);
         }
+        [HttpGet("liked")]
+        public async Task<ActionResult<List<PostDto>>> GetLikedPosts()
+        {
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var posts = await _postService.GetLikedPostsAsync(currentUserId);
+            return Ok(posts);
+        }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<PostDto>> GetPostById(int id)
@@ -34,7 +43,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult<PostDto>> UpdatePost(int id, [FromBody] UpdatePostDto dto)
+        public async Task<ActionResult<PostDto>> UpdatePost(int id, [FromForm] UpdatePostDto dto)
         {
             var updatedPost = await _postService.UpdatePostAsync(id, dto);
             return Ok(updatedPost);

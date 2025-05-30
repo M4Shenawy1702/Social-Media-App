@@ -41,7 +41,7 @@ namespace API.Controllers
         }
 
         // Cancel Friend Request
-        [HttpPost("cancel-request/{relationshipId}")]
+        [HttpDelete("cancel-request/{relationshipId}")]
         public async Task<IActionResult> CancelFriendRequest(int relationshipId)
         {
             await _userRelationshipService.CancelFriendRequestAsync(relationshipId);

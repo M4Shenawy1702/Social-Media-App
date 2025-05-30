@@ -78,4 +78,16 @@ export class FriendService {
 
     return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/UserRelationships/remove-friend/${friendId}`, { headers });
   }
+  cancelRequest(requestId: string): Observable<FriendRequestResponse> {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      return throwError(() => new Error('Authentication token not found'));
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/UserRelationships/cancel-request/${requestId}`, { headers });
+  }
 }

@@ -1,38 +1,67 @@
-<div class="friend-requests-container">
-  <h2>Friend sent Requests</h2>
+<div class="container">
 
-  @if (errorMessage) {
-    <div class="error-message">{{ errorMessage }}</div>
-  }
-
-  @if (isLoading) {
-    <div class="loading">Loading...</div>
-  }
-
-  @if (!isLoading && friendRequests.length === 0) {
-    <p>You have no pending friend requests</p>
-  }
-
-  @if (!isLoading && friendRequests.length > 0) {
-    <div class="requests-grid">
-      @for (request of friendRequests; track request.id) {
-        <div class="request-card">
-          <img
-            class="avatar"
-            [src]="request.profilePictureUrl || 'assets/images/default-avatar.png'"
-            alt="{{ request.initiatorName }}"
-          />
-          <div class="info">
-            <h3>{{ request.initiatorName }}</h3>
-            <p class="status">Status: {{ request.status }}</p>
-            <p class="date">Sent on: {{ request.createdAt | date:'mediumDate' }}</p>
-          </div>
-          <div class="actions">
-            <button (click)="respondToRequest(request.id, true)" class="cancel">Cancel</button>
-            <!-- <button (click)="respondToRequest(request.id, false)" class="reject">Reject</button> -->
-          </div>
-        </div>
-      }
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-  }
+    <span class="ms-3">Loading users...</span>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Friend request cards -->
+  <div *ngIf="!isLoading && !errorMessage && friendSentRequests.length > 0"
+       class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
+
+    <div *ngFor="let reqest of friendSentRequests; trackBy: trackByFriendId" class="col">
+      <div class="card h-100">
+
+        <!-- Clickable card body -->
+        <div [routerLink]="['/main-layout/profile', reqest.friendId]"
+             class="card-body text-decoration-none text-dark"
+             style="cursor: pointer;">
+
+          <!-- Profile picture -->
+          <img *ngIf="reqest.profilePictureUrl; else defaultImg"
+               [src]="baseUrl + reqest.profilePictureUrl"
+               class="card-img-top object-fit-cover rounded-top"
+               style="height: 180px;"
+               [alt]="reqest.friendName + '\'s profile photo'">
+          <ng-template #defaultImg>
+            <img src="assets/DefaultProfile.jpg"
+                 class="card-img-top object-fit-cover rounded-top"
+                 style="height: 180px;"
+                 [alt]="reqest.friendName + '\'s profile photo'">
+          </ng-template>
+
+          <!-- Name -->
+          <h5 class="card-title mt-3">{{ reqest.friendName }}</h5>
+        </div>
+
+        <!-- Footer with cancel button -->
+        <div class="card-footer bg-transparent border-top text-center">
+          <button (click)="onCancelRequest(reqest.id); $event.stopPropagation();"
+                  class="btn btn-outline-danger w-100">
+            Cancel Request
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- No requests found -->
+  <div *ngIf="!isLoading && !errorMessage && friendSentRequests.length === 0"
+       class="d-flex justify-content-center align-items-center vh-100">
+    <div class="alert alert-info text-center">
+      No requests found
+    </div>
+  </div>
+
 </div>

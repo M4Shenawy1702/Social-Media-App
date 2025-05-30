@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Shared.Dtos.LikeDtos;
+using API.Shared.Dtos.PostDtos;
 
 namespace API.Services
 {
@@ -40,23 +41,7 @@ namespace API.Services
             return "Like added successfully";
         }
 
-        public async Task<IEnumerable<LikeDto>> GetUserLikesAsync(string userId)
-        {
-            var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
-            var user = await userRepo.GetAsync(new GetUserWithLikesSpecifications(userId)) ??
-                throw new UserNotFoundException(userId);
-
-            return _mapper.Map<IEnumerable<LikeDto>>(user.Likes);
-        }
-
-        public async Task<bool> HasUserLikedAsync(string userId, int postId)
-        {
-            var likeRepo = _unitOfWork.GetRepository<Like, int>();
-            var like = await likeRepo.GetAsync(new GetLikeSpecifications(userId, postId));
-            return like != null;
-        }
-
-
+        
 
     }
 }

@@ -48,7 +48,7 @@ namespace API.Services
             return _mapper.Map<PostDto>(post);
         }
 
-        public async Task<string> DeletePostAsync(int id , string currentUserId)
+        public async Task<string> DeletePostAsync(int id, string currentUserId)
         {
             var repo = _unitOfWork.GetRepository<Post, int>();
 
@@ -60,7 +60,7 @@ namespace API.Services
             return "Post deleted successfully";
         }
 
-        public async Task<PaginatedResult<PostDto>> GetAllPostsAsync(PostQueryParameters parameters , string currentUserId)
+        public async Task<PaginatedResult<PostDto>> GetAllPostsAsync(PostQueryParameters parameters, string currentUserId)
         {
             var specification = new PostSpecification(parameters);
             var repo = _unitOfWork.GetRepository<Post, int>();
@@ -69,7 +69,7 @@ namespace API.Services
             var postIds = posts.Select(p => p.Id).ToList();
             var likesRepo = _unitOfWork.GetRepository<Like, int>();
 
-            var likedPostIds = await likesRepo.GetAllAsync(new GetLikesByPostIdsByUserIdSpecification(currentUserId,postIds));
+            var likedPostIds = await likesRepo.GetAllAsync(new GetLikesByPostIdsByUserIdSpecification(currentUserId, postIds));
             var likedPostIdSet = likedPostIds.Select(l => l.PostId).ToHashSet();
 
             var data = _mapper.Map<IEnumerable<PostDto>>(posts);
@@ -83,6 +83,23 @@ namespace API.Services
 
             return new PaginatedResult<PostDto>(parameters.PageIndex, parameters.PageSize, totalCount, data);
         }
+
+        public async Task<List<LIkedPostDto>> GetLikedPostsAsync(string currentUserId)
+        {
+            var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
+            var user = await userRepo.GetAsync(new GetUserWithLikesSpecifications(currentUserId))
+                ?? throw new UserNotFoundException(currentUserId);
+
+            var likedPostIds = user.Likes.Select(like => like.PostId).ToList();
+                
+            var repo = _unitOfWork.GetRepository<Post, int>();
+            var posts = await repo.GetAllAsync(new GetPostsByIdsSpecification(likedPostIds));
+
+            var likedPostIdSet = _mapper.Map<List<LIkedPostDto>>(posts);
+            
+            return likedPostIdSet;
+        }
+
 
         public async Task<PostDto> GetPostByIdAsync(int id)
         {

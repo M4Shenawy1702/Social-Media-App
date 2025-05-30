@@ -24,6 +24,7 @@ export class ProfileComponent implements OnInit {
   userId: string | null = null;
   CurrentUserId: string | null = null;
   userProfile: UserProfile | null = null;
+  activeTab: 'posts' | 'likes' = 'posts';
   isLoading = false;
   errorMessage = '';
 
@@ -33,6 +34,7 @@ export class ProfileComponent implements OnInit {
     count: 0,
     data: []
   };
+  likedPosts: Post[] = [];
 
   constructor(
     private http: HttpClient, 
@@ -48,6 +50,7 @@ export class ProfileComponent implements OnInit {
     if (this.userId) {
       this.getProfile(this.userId);
       this.getCurrentUserPost(this.userId); 
+      this.getAllLikedPosts();
       this.CurrentUserId = this.AuthServiceService.getCurrentUserId();
     }
   });
@@ -62,17 +65,6 @@ export class ProfileComponent implements OnInit {
         next: (res) => this.userProfile = res,
         error: (err) => console.error('Failed to load user profile:', err)
       });
-  }
-
-  getCurrentUser(): CurrentUser | null {
-    try {
-      const userString = localStorage.getItem('user');
-      if (!userString) return null;
-      return JSON.parse(userString) as CurrentUser;
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      return null;
-    }
   }
 
   getCurrentUserPost(userId: string) {
@@ -97,12 +89,28 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+   getAllLikedPosts() {
+    this.isLoading = true;
+
+    this.postsService.getAllLikedPosts().subscribe({
+      next: (response) => {
+        this.likedPosts = response;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = 'Failed to load liked posts.';
+        console.error(err);
+      }
+    });
+  }
+
   onAddFriend(receiverId: string) {
-    const currentUser = this.getCurrentUser();
+    const currentUser = this.AuthServiceService.getCurrentUserId();
     if (!currentUser || this.isLoading) return;
 
     this.isLoading = true;
-    this.friendService.addFriend(currentUser.userId, receiverId).subscribe({
+    this.friendService.addFriend(currentUser, receiverId).subscribe({
       next: (res) => {
         console.log('Friend added!', res);
         this.isLoading = false;

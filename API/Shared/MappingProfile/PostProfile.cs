@@ -11,12 +11,14 @@ namespace API.Shared.MappingProfile
             CreateMap<Post, PostDto>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.LastUpdatedAt))
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Count))
-                // Assuming Media and Comments have their own mappings registered
-                .ForMember(dest => dest.Media, opt => opt.MapFrom(src => src.Media))
-                .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
-                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.UserName)) 
-                .ForMember(dest => dest.AuthorImageUrl, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl))  
-                .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.AuthorId));
+                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.UserName))
+                .ForMember(dest => dest.AuthorImageUrl, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl));
+
+            CreateMap<Post, LIkedPostDto>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.LastUpdatedAt))
+                .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Count))
+                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.UserName))
+                .ForMember(dest => dest.AuthorImageUrl, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl));
 
             
             CreateMap<PostMedia, PostMediaDetailsDto>()

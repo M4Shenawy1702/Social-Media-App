@@ -12,6 +12,8 @@ namespace API.Shared.Dtos.CommentDtos
         public DateTime LastUpdatedAt { get; set; }
         public int PostId { get; set; }
         public string? AuthorName { get; set; }
+        public string? AuthorId { get; set; }
         public string? AuthorImageUrl { get; set; }
+        
     }
 }

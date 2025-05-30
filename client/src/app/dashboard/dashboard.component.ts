@@ -1,3 +1,4 @@
+import { FriendService } from './../Services/friend.service';
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -5,6 +6,8 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { UserProfile } from '../shared/Contracts/UserProfile';
+import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
+import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,13 +28,14 @@ export class DashboardComponent {
 
   isLoading = false;
   errorMessage = '';
-
+  currentUserId: string | null = null;
   baseUrl = 'http://localhost:5043/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private friendService: FriendService , private AuthServiceService: AuthServiceService) { }
 
   ngOnInit(): void {
     this.getUsers();
+    this.currentUserId = this.AuthServiceService.getCurrentUserId();
   }
 
   getUsers(): void {
@@ -66,6 +70,21 @@ export class DashboardComponent {
         this.isLoading = false;
         this.errorMessage = 'Failed to load the data';
         console.error(err);
+      }
+    });
+  }
+
+  onAddFriend(receiverId: string) {
+
+    this.isLoading = true;
+    this.friendService.addFriend(this.currentUserId, receiverId).subscribe({
+      next: (res) => {
+        console.log('Friend added!', res);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error adding friend:', err);
+        this.isLoading = false;
       }
     });
   }

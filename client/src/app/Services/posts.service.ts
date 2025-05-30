@@ -42,6 +42,14 @@ export class PostsService {
       params: queryParams
     });
   }
+  getAllLikedPosts(): Observable<Post[]> {
+    const token = localStorage.getItem('jwtToken');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<Post[]>(`${this.baseUrl}api/Posts/liked`, {
+      headers,
+    });
+  }
 
   onLike(postId: number): Observable<any> {
     const token = localStorage.getItem('jwtToken') || '';
@@ -62,6 +70,12 @@ export class PostsService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.get<Post>(`${this.baseUrl}api/Posts/${postId}`, { headers });
+  }
+  updatePost(postId: number, formData: FormData): Observable<any> {
+    const token = localStorage.getItem('jwtToken') || '';
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.put(`${this.baseUrl}api/Posts/${postId}`, formData, { headers });
   }
 
 }

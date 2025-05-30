@@ -19,6 +19,18 @@ export class CommentsService {
 
     return this.http.post<PostComment>(`${this.baseUrl}api/Comments`, formData, { headers });
   }
+  deleteComment(commentId: number): Observable<any> {
+    const token = localStorage.getItem('jwtToken') || '';
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
+    return this.http.delete(`${this.baseUrl}api/Comments/${commentId}`, { headers, responseType: 'text' });
+  }
+
+  updateComment(commentId: number, formData: FormData): Observable<PostComment> {
+    const token = localStorage.getItem('jwtToken') || '';
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.put<PostComment>(`${this.baseUrl}api/Comments/${commentId}`, formData, { headers });
+  }
 
 }

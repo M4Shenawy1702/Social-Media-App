@@ -2,6 +2,8 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { FriendListDetails } from '../shared/Contracts/FreindRequestDetails';
+import { FriendStatus } from "../shared/Contracts/FriendStatus";
+import { map } from 'rxjs/operators';
 
 
 interface FriendRequestResponse {
@@ -16,7 +18,7 @@ interface FriendRequestResponse {
 export class FriendService {
   private readonly baseUrl = 'http://localhost:5043/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   addFriend(initiatorId: string, receiverId: string): Observable<FriendRequestResponse> {
     // Validate inputs
@@ -90,4 +92,25 @@ export class FriendService {
 
     return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/UserRelationships/cancel-request/${requestId}`, { headers });
   }
+  getFriendStatus(friendId: string): Observable<FriendStatus> {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      return throwError(() => new Error('Authentication token not found'));
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<number>(`${this.baseUrl}/UserRelationships/get-friend-status/${friendId}`, { headers })
+      .pipe(
+        map((statusNumber: number) => {
+          if (Object.values(FriendStatus).includes(statusNumber)) {
+            return statusNumber as FriendStatus;
+          }
+          return FriendStatus.None;
+        })
+      );
+  }
+
 }

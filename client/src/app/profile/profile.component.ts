@@ -1,7 +1,7 @@
 import { CurrentUser } from './../shared/Contracts/CurrentUser';
 import { AuthServiceService } from './../Services/AuthService/auth-service.service';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FriendService } from '../Services/friend.service';
@@ -11,6 +11,7 @@ import { Post } from '../shared/Contracts/Post';
 import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { PostsComponent } from "../posts/posts.component";
+import { FriendStatus } from "../shared/Contracts/FriendStatus";
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +21,7 @@ import { PostsComponent } from "../posts/posts.component";
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
+  FriendStatus = FriendStatus; 
   baseUrl = 'http://localhost:5043/';
   userId: string | null = null;
   CurrentUserId: string | null = null;
@@ -27,6 +29,7 @@ export class ProfileComponent implements OnInit {
   activeTab: 'posts' | 'likes' = 'posts';
   isLoading = false;
   errorMessage = '';
+  friendStatus: FriendStatus = FriendStatus.None;  
 
   posts: PagenatedResult<Post> = {
     pageIndex: 1,
@@ -40,21 +43,24 @@ export class ProfileComponent implements OnInit {
     private http: HttpClient, 
     private route: ActivatedRoute,
     private friendService: FriendService,
-    private postsService: PostsService ,
+    private postsService: PostsService,
     private AuthServiceService: AuthServiceService
   ) {}
 
- ngOnInit(): void {
-  this.route.paramMap.subscribe(params => {
-    this.userId = params.get('id');
-    if (this.userId) {
-      this.getProfile(this.userId);
-      this.getCurrentUserPost(this.userId); 
-      this.getAllLikedPosts();
-      this.CurrentUserId = this.AuthServiceService.getCurrentUserId();
-    }
-  });
-}
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      this.userId = params.get('id');
+      if (this.userId) {
+        this.CurrentUserId = this.AuthServiceService.getCurrentUserId();
+        this.getProfile(this.userId);
+        this.getCurrentUserPost(this.userId); 
+        if (this.userId === this.CurrentUserId) {
+          this.getAllLikedPosts();
+        }
+        this.getFriendStatus(this.userId);
+      }
+    });
+  }
 
   getProfile(userId: string) {
     const token = localStorage.getItem('jwtToken');
@@ -63,7 +69,10 @@ export class ProfileComponent implements OnInit {
     this.http.get<UserProfile>(`${this.baseUrl}api/users/${userId}`, { headers })
       .subscribe({
         next: (res) => this.userProfile = res,
-        error: (err) => console.error('Failed to load user profile:', err)
+        error: (err) => {
+          console.error('Failed to load user profile:', err);
+          this.errorMessage = 'Failed to load user profile.';
+        }
       });
   }
 
@@ -89,7 +98,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-   getAllLikedPosts() {
+  getAllLikedPosts() {
     this.isLoading = true;
 
     this.postsService.getAllLikedPosts().subscribe({
@@ -105,18 +114,34 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  onAddFriend(receiverId: string) {
+  onAddFriend(receiverId: string | null) {
     const currentUser = this.AuthServiceService.getCurrentUserId();
-    if (!currentUser || this.isLoading) return;
+    if (!currentUser || this.isLoading || !receiverId) return;
 
     this.isLoading = true;
     this.friendService.addFriend(currentUser, receiverId).subscribe({
       next: (res) => {
         console.log('Friend added!', res);
         this.isLoading = false;
+        this.friendStatus = FriendStatus.Pending;  
       },
       error: (err) => {
         console.error('Error adding friend:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getFriendStatus(friendId: string) {
+    this.isLoading = true;
+    this.friendService.getFriendStatus(friendId).subscribe({
+      next: (res) => {
+        console.log('Friend Status:', res);
+        this.friendStatus = res;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching friend status:', err);
         this.isLoading = false;
       }
     });

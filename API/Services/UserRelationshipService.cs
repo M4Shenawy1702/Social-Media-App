@@ -11,16 +11,11 @@ namespace API.Services
             if (initiatorId == receiverId)
                 throw new ServiceException(400, "You cannot send a request to yourself.");
 
-            var initiator = await _userManager.FindByIdAsync(initiatorId) ??
-                throw new UserNotFoundException(initiatorId);
-            var receiver = await _userManager.FindByIdAsync(receiverId) ??
-                throw new UserNotFoundException(receiverId);
-
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
 
-            var existing = await repo.GetAsync(new UserRelationshipWithIncludesSpecification(initiatorId, receiverId));
+            var existing = await repo.GetAsync(new ChechUserRelationshipExistsSpesification(initiatorId, receiverId));
 
-            if (existing != null)
+            if (existing is not null)
                 throw new ServiceException(400, "Friend request already exists or relationship in progress.");
 
             var request = new UserRelationship
@@ -40,7 +35,7 @@ namespace API.Services
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
 
             var relationship = await repo.GetAsync(relationshipId)
-                ?? throw new RelationshipNotFoundException(relationshipId);
+                ?? throw new RelationshipNotFoundException();
 
             if (relationship.Status != RelationshipStatus.Pending)
                 throw new ServiceException(400, "Cannot accept non-pending request. The status is either already accepted or declined.");
@@ -54,7 +49,7 @@ namespace API.Services
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
 
             var relationship = await repo.GetAsync(relationshipId)
-                ?? throw new RelationshipNotFoundException(relationshipId);
+                ?? throw new RelationshipNotFoundException();
 
             if (relationship.Status != RelationshipStatus.Pending)
                 throw new ServiceException(400, "Only pending requests can be canceled.");
@@ -68,7 +63,7 @@ namespace API.Services
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
 
             var relationship = await repo.GetAsync(relationshipId)
-                ?? throw new RelationshipNotFoundException(relationshipId);
+                ?? throw new RelationshipNotFoundException();
 
             if (relationship.Status != RelationshipStatus.Pending)
                 throw new ServiceException(400, "Only pending requests can be declined.");
@@ -80,7 +75,8 @@ namespace API.Services
         public async Task<List<FriendRequestDetailsDto>> GetFriendsAsync(string userId)
         {
             var repo = _unitOfWork.GetRepository<UserRelationship, int>();
-            var relationships = await repo.GetAllAsync(new UserRelationshipWithIncludesSpecification(userId));
+            var relationships = await repo.GetAllAsync(new UserRelationshipWithIncludesSpecification(userId)) ??
+                throw new RelationshipNotFoundException();
 
             var friendDtos = relationships
                 .Select(r =>
@@ -130,7 +126,7 @@ namespace API.Services
                        Id = r.Id,
                        FriendName = friend.DisplayName,
                        ProfilePictureUrl = friend.ProfilePictureUrl ?? string.Empty,
-                       CreatedAt =r.CreatedAt,
+                       CreatedAt = r.CreatedAt,
                        FriendId = friend.Id
                    };
                })
@@ -160,6 +156,14 @@ namespace API.Services
                 .ToList();
 
             return SentRequestsDtos;
+        }
+        public async Task<RelationshipStatus> GetFriendStatusAsync(string userId, string friendId)
+        {
+            if (userId == friendId) return RelationshipStatus.Self;
+
+            var repo = _unitOfWork.GetRepository<UserRelationship, int>();
+            var relationship = await repo.GetAsync(new ChechUserRelationshipExistsSpesification(userId, friendId));
+            return relationship?.Status ?? RelationshipStatus.None;
         }
     }
 }

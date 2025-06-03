@@ -24,25 +24,40 @@
             </div>
           </div>
 
-          @if (this.CurrentUserId != this.userId) {
-          <!-- Action Buttons -->
-          <div class="d-flex justify-content-end gap-2 mt-4 px-3">
-            <button class="btn btn-primary rounded-pill px-3" (click)="onAddFriend(userId)">
+          <!-- Only show action buttons if viewing someone else's profile -->
+          <div *ngIf="CurrentUserId !== userId" class="d-flex justify-content-end gap-2 mt-4 px-3">
+
+            <!-- Show Send Friend Request if status is None -->
+            <button *ngIf="friendStatus === FriendStatus.None" class="btn btn-primary rounded-pill px-3"
+              (click)="onAddFriend(userId)">
               <i class="bi bi-plus-lg me-1"></i> Send Friend Request
             </button>
+
+            <!-- Show Pending status button -->
+            <button *ngIf="friendStatus === FriendStatus.Pending" class="btn btn-primary rounded-pill px-3" disabled>
+              <i class="bi bi-hourglass-split me-1"></i> Friend Request Pending
+            </button>
+
+            <!-- Show Friends button -->
+            <button *ngIf="friendStatus === FriendStatus.Accepted" class="btn btn-success rounded-pill px-3" disabled>
+              <i class="bi bi-check-lg me-1"></i> Friends
+            </button>
+
+            <!-- Message button always shown -->
             <a [routerLink]="['/main-layout/chat', userId, userProfile?.displayName]"
               class="btn btn-outline-primary rounded-pill px-3">
               <i class="bi bi-chat-left-text me-1"></i> Message
             </a>
           </div>
-          }
+
 
           <!-- Bio and Location -->
           <div class="col p-2 text-black bg-body-tertiary">
             <div class="text-body px-3">
               <p class="mb-2 text-muted">{{ userProfile?.bio || 'No bio available.' }}</p>
               <p class="mb-0 text-muted">
-                {{ userProfile?.userAddress ? userProfile.userAddress.country + ' - ' + userProfile.userAddress.city + ' - ' + userProfile.userAddress.street : 'Unknown location' }}
+                {{ userProfile?.userAddress ? userProfile.userAddress.country + ' - ' + userProfile.userAddress.city + '
+                - ' + userProfile.userAddress.street : 'Unknown location' }}
               </p>
             </div>
           </div>
@@ -50,9 +65,9 @@
           <!-- Followers / Following -->
           <div class="p-4 text-black bg-body-tertiary">
             <div class="d-flex justify-content-start align-items-center text-center text-body">
-              <div class="px-3 text-center" [routerLink]="['/main-layout/friend-list']" style="cursor: pointer;" 
-             hovwer class="text-primary">
-                <p class="mb-1 h5 fw-bold">1026</p>
+              <div class="px-3 text-center" [routerLink]="['/main-layout/friend-list']" style="cursor: pointer;" hovwer
+                class="text-primary">
+                <p class="mb-1 h5 fw-bold">{{userProfile?.friendsCount}}</p>
                 <p class="small text-muted mb-0">Friend</p>
               </div>
             </div>
@@ -89,7 +104,7 @@
               </button>
               <button class="btn"
                 [ngClass]="{ 'btn-primary': activeTab === 'likes', 'btn-outline-primary': activeTab !== 'likes' }"
-                (click)="activeTab = 'likes'">
+                (click)="activeTab = 'likes'" *ngIf="userId === CurrentUserId">
                 Likes
               </button>
             </div>

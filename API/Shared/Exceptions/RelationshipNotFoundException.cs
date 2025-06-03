@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace API.Shared.Exceptions
 { 
-    public class RelationshipNotFoundException (int relationshipId)
-    : Exception($"Friend request with id:{relationshipId} was Found!")
+    public class RelationshipNotFoundException ()
+    : Exception($"Friend request was not Found!")
     {
         
     }

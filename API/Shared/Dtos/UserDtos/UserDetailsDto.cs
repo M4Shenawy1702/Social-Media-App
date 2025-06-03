@@ -19,8 +19,8 @@ namespace API.Shared.Dtos.UserDtos
         public bool IsOnline { get; set; }
         public UserAddressDto UserAddress { get; set; }
         public Gender Gender { get; set; }
-        public int Age => CalculateAge();
-        public UserDetailsDto() {}
+        public int FriendsCount { get; set;}
+        public UserDetailsDto() { }
         public UserDetailsDto(
             Guid id,
             string userName,

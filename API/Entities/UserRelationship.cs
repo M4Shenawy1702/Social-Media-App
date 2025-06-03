@@ -18,6 +18,8 @@ namespace API.Entities
         Pending,
         Accepted,
         Blocked,
-        Declined
+        Declined,
+        None,
+        Self
     }
 }

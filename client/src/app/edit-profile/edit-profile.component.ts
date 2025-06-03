@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserProfile } from '../shared/Contracts/UserProfile'; 
 import { Gender } from '../shared/enums/Gender'; 
+import { editUserProfile } from '../shared/Contracts/editUserProfile';
 
 
 @Component({
@@ -21,7 +22,7 @@ export class EditProfileComponent implements OnInit {
   baseUrl = 'http://localhost:5043/';
   userId: string = '';
   
-  userProfile: UserProfile = {
+  editUserProfile: editUserProfile = {
     id: '',
     userName: '',
     email: '',
@@ -30,8 +31,6 @@ export class EditProfileComponent implements OnInit {
     coverPhotoUrl: '',
     bio: '',
     dateOfBirth: '',
-    createdAt: '',
-    isOnline: false,
     phoneNumber: '',
     gender: Gender.Male,
     userAddress: {
@@ -67,7 +66,7 @@ export class EditProfileComponent implements OnInit {
 
     this.http.get<UserProfile>(`${this.baseUrl}api/users/${this.userId}`, { headers }).subscribe({
       next: (profile) => {
-        this.userProfile = profile;
+        this.editUserProfile = profile;
       },
       error: (err) => {
         console.error('Error loading profile:', err);
@@ -78,7 +77,7 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  updateUserProfile(model: UserProfile) {
+  updateUserProfile(model: editUserProfile) {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
       console.error('No token found');

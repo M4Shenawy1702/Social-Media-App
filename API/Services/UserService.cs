@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Services
 {
-    public class UserService(UserManager<ApplicationUser> _userManager ,IMapper _mapper,IUnitOfWork _unitOfWork)
+    public class UserService(UserManager<ApplicationUser> _userManager, IMapper _mapper, IUnitOfWork _unitOfWork)
     : IUserService
     {
-        private List<string> _AllowedExtensions = new List<string> { ".jpg", ".png",".jpeg" };
+        private List<string> _AllowedExtensions = new List<string> { ".jpg", ".png", ".jpeg" };
         private long _MaxAllowedSize = 10485760;
         public async Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters)
         {
@@ -23,33 +23,40 @@ namespace API.Services
 
         public async Task<UserDetailsDto> GetUserProfileAsync(string userId)
         {
-           var user = await _userManager.Users
-                .Include(u => u.UserAddress)
-                .FirstOrDefaultAsync(u => u.Id == userId)??
-                    throw new UserNotFoundException(userId);
-            
+            var user = await _userManager.Users
+            .Include(u => u.UserAddress)
+            .Include(u => u.RelationshipsInitiated)
+            .ThenInclude(r => r.Receiver)
+            .Include(u => u.RelationshipsReceived)
+            .ThenInclude(r => r.Initiator)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                throw new UserNotFoundException(userId);
+
+
             return _mapper.Map<UserDetailsDto>(user);
         }
 
         public async Task<UserDetailsDto> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto)
         {
-             var user = await _userManager.Users
-                .Include(u => u.UserAddress)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            if(user is null) throw new UserNotFoundException(userId);
+            var user = await _userManager.Users
+               .Include(u => u.UserAddress)
+               .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null) throw new UserNotFoundException(userId);
 
             string profilePicturePath = null;
             string coverPhotoPath = null;
 
-        if (updateDto.ProfilePicture != null)
-        {
-            profilePicturePath = await SaveImageAsync(updateDto.ProfilePicture, "profile", user.ProfilePictureUrl);
-        }
+            if (updateDto.ProfilePicture != null)
+            {
+                profilePicturePath = await SaveImageAsync(updateDto.ProfilePicture, "profile", user.ProfilePictureUrl);
+            }
 
-        if (updateDto.CoverPhoto != null)
-        {
-            coverPhotoPath = await SaveImageAsync(updateDto.CoverPhoto, "cover", user.CoverPhotoUrl);
-        }
+            if (updateDto.CoverPhoto != null)
+            {
+                coverPhotoPath = await SaveImageAsync(updateDto.CoverPhoto, "cover", user.CoverPhotoUrl);
+            }
 
             user.Email = updateDto.Email.Trim();
             user.UserName = updateDto.UserName.Trim();
@@ -62,7 +69,8 @@ namespace API.Services
             user.DateOfBirth = updateDto.DateOfBirth;
             if (user.UserAddress == null)
             {
-                user.UserAddress = new UserAddress{
+                user.UserAddress = new UserAddress
+                {
                     City = updateDto.City,
                     Country = updateDto.Country,
                     Street = updateDto.Street

@@ -16,11 +16,11 @@ namespace API.Controllers
 
         // Send Friend Request
         [HttpPost("send-request/{initiatorId}/{receiverId}")]
-        public async Task<IActionResult> SendFriendRequest([FromRoute] string initiatorId , string receiverId )
+        public async Task<IActionResult> SendFriendRequest([FromRoute] string initiatorId, string receiverId)
         {
             // Console.WriteLine($"Endpoint reached for {receiverId}"); 
             // var initiatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _userRelationshipService.SendFriendRequestAsync( initiatorId!, receiverId);
+            await _userRelationshipService.SendFriendRequestAsync(initiatorId!, receiverId);
             return Ok(new { message = "Friend request sent successfully." });
         }
 
@@ -79,6 +79,15 @@ namespace API.Controllers
         {
             var sentRequests = await _userRelationshipService.GetSentRequestsAsync(userId);
             return Ok(sentRequests);
+        }
+        [HttpGet("get-friend-status/{FriendId}")]
+        public async Task<IActionResult> GetFriendRequests(string FriendId)
+        {
+             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var friendRequests = await _userRelationshipService.GetFriendStatusAsync(currentUserId!, FriendId);
+            return Ok(friendRequests);
         }
     }
 }

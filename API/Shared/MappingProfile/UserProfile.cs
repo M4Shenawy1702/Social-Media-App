@@ -13,19 +13,26 @@ namespace API.Profiles
             CreateMap<ApplicationUser, UserDetailsDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender.ToString()))
-                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)));
+               .ForMember(dest => dest.FriendsCount, opt => opt.MapFrom(src =>
+                src.RelationshipsInitiated.Count(r => r.Status == RelationshipStatus.Accepted) +
+                src.RelationshipsReceived.Count(r => r.Status == RelationshipStatus.Accepted)));
+
 
             // Bidirectional mapping for UserAddress
             CreateMap<UserAddress, UserAddressDto>()
                 .ReverseMap();
         }
 
-        private int CalculateAge(DateTime dateOfBirth)
+        private int CalculateFriendsCount(ApplicationUser user)
         {
-            var today = DateTime.Today;
-            var age = today.Year - dateOfBirth.Year;
-            if (dateOfBirth.Date > today.AddYears(-age)) age--;
-            return age;
+            var initiated = user.RelationshipsInitiated
+                .Count(r => r.Status == RelationshipStatus.Accepted);
+
+            var received = user.RelationshipsReceived
+                .Count(r => r.Status == RelationshipStatus.Accepted);
+
+            return initiated + received;
         }
+
     }
 }

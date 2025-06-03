@@ -1,8 +1,8 @@
-<form #profileForm="ngForm" class="container mt-4" (ngSubmit)="updateUserProfile(userProfile)">
+<form #profileForm="ngForm" class="container mt-4" (ngSubmit)="updateUserProfile(editUserProfile)">
     <!-- Cover Photo Preview and Input -->
     <div class="mb-4 text-center">
       <img 
-        [src]="coverPreview || (baseUrl + userProfile.coverPhotoUrl)" 
+        [src]="coverPreview || (baseUrl + editUserProfile.coverPhotoUrl)" 
         alt="Cover Photo" 
         class="img-fluid rounded mb-2" 
         style="height: 200px; object-fit: cover; width: 100%;">
@@ -13,7 +13,7 @@
       <!-- Left Column: Profile Picture -->
       <div class="col-md-4 text-center">
         <img 
-          [src]="profilePreview || (baseUrl + userProfile.profilePictureUrl)" 
+          [src]="profilePreview || (baseUrl + editUserProfile.profilePictureUrl)" 
           alt="Profile Picture" 
           class="img-thumbnail rounded-circle mb-3" 
           style="width: 150px; height: 150px; object-fit: cover;">
@@ -24,46 +24,46 @@
       <div class="col-md-8">
         <div class="mb-3">
           <label class="form-label">Display Name</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.displayName" name="displayName">
+          <input type="text" class="form-control" [(ngModel)]="editUserProfile.displayName" name="displayName">
         </div>
         <div class="mb-3">
           <label class="form-label">Username</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.userName" name="userName">
+          <input type="text" class="form-control" [(ngModel)]="editUserProfile.userName" name="userName">
         </div>
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input type="email" class="form-control" [(ngModel)]="userProfile.email" name="email">
+          <input type="email" class="form-control" [(ngModel)]="editUserProfile.email" name="email">
         </div>
         <div class="mb-3">
           <label class="form-label">Phone Number</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.phoneNumber" name="phoneNumber">
+          <input type="text" class="form-control" [(ngModel)]="editUserProfile.phoneNumber" name="phoneNumber">
         </div>
         <div class="mb-3">
           <label class="form-label">Bio</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="userProfile.bio" name="bio"></textarea>
+          <textarea class="form-control" rows="3" [(ngModel)]="editUserProfile.bio" name="bio"></textarea>
         </div>
         <div class="mb-3">
           <label class="form-label">Date of Birth</label>
-          <input type="date" class="form-control" [(ngModel)]="userProfile.dateOfBirth" name="dateOfBirth">
+          <input type="date" class="form-control" [(ngModel)]="editUserProfile.dateOfBirth" name="dateOfBirth">
         </div>
         <div class="mb-3">
           <label class="form-label">Gender</label>
-          <select class="form-select" [(ngModel)]="userProfile.gender" name="gender">
+          <select class="form-select" [(ngModel)]="editUserProfile.gender" name="gender">
             <option [ngValue]="0">Male</option>
             <option [ngValue]="1">Female</option>
           </select>
         </div>
         <div class="mb-3">
           <label class="form-label">Country</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.userAddress.country" name="country">
+          <input type="text" class="form-control" [(ngModel)]="editUserProfile.userAddress.country" name="country">
         </div>
         <div class="mb-3">
           <label class="form-label">City</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.userAddress.city" name="city">
+          <input type="text" class="form-control" [(ngModel)]="editUserProfile.userAddress.city" name="city">
         </div>
         <div class="mb-3">
           <label class="form-label">Street</label>
-          <input type="text" class="form-control" [(ngModel)]="userProfile.userAddress.street" name="street">
+          <input type="text" class="form-control" [(ngModel)]="editUserProfile.userAddress.street" name="street">
         </div>
       </div>
     </div>

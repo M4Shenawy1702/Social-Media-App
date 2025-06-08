@@ -12,7 +12,6 @@ namespace API.Specifications
         : base(p => postIds.Contains(p.Id))
         {
             AddInclude(p => p.Author);
-            AddInclude(p => p.Media);
             AddInclude(p => p.Comments);
             AddInclude(p => p.Likes);
         }

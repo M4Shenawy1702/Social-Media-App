@@ -6,11 +6,9 @@ import { AuthServiceService } from '../Services/AuthService/auth-service.service
 import { CommonModule } from '@angular/common';
 import { RegisterRequest } from '../shared/Contracts/RegisterRequest';
 import { LoginModel } from '../shared/Contracts/LoginModel';
+import { Gender } from '../shared/enums/Gender';
+import Swal from 'sweetalert2';
 
-export enum Gender {
-  Male = 'Male',
-  Female = 'Female'
-}
 
 
 @Component({
@@ -28,20 +26,20 @@ export class LoginComponent {
   coverPhotoPreview: string | ArrayBuffer | null = null;
 
   RegisterRequest: RegisterRequest = {
-    Email: '',      
-    UserName: '',    
-    Password: '',  
-    ConfirmPassword: '',  
-    DisplayName: '', 
-    PhoneNumber: '', 
-    DateOfBirth: '', 
-    Gender: null, 
-    Bio: '', 
-    ProfilePicture: null, 
-    CoverPhoto: null, 
-    City: '', 
-    Street: '', 
-    Country: '', 
+    Email: '',
+    UserName: '',
+    Password: '',
+    ConfirmPassword: '',
+    DisplayName: '',
+    PhoneNumber: '',
+    DateOfBirth: '',
+    Gender: null,
+    Bio: '',
+    ProfilePicture: null,
+    CoverPhoto: null,
+    City: '',
+    Street: '',
+    Country: '',
   };
 
   loginModel: LoginModel = {
@@ -54,16 +52,14 @@ export class LoginComponent {
     private _httpClient: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
     private _authService: AuthServiceService
-  ) {}
+  ) { }
 
-  // دالة معالجة تحميل الملفات
   handleFileInput(event: Event, field: 'ProfilePicture' | 'CoverPhoto'): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
       this.RegisterRequest[field] = file;
 
-      // إنشاء معاينة للصورة
       const reader = new FileReader();
       reader.onload = (e) => {
         if (field === 'ProfilePicture') {
@@ -76,42 +72,55 @@ export class LoginComponent {
     }
   }
 
-loginUser(loginModel: LoginModel) {
-  this._authService.login(loginModel).subscribe({
-    next: (data: any) => {
-      this.isLoggedIn = true;
+  loginUser(loginModel: LoginModel) {
+    this._authService.login(loginModel).subscribe({
+      next: (data: any) => {
+        this.isLoggedIn = true;
 
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('user', JSON.stringify(data));
 
-      // Save the JWT token separately, assuming it's in data.token
-      if (data.token) {
-        localStorage.setItem('jwtToken', data.token);
-      } else {
-        console.warn('Token not found in login response');
+        if (data.token) {
+          localStorage.setItem('jwtToken', data.token);
+        } else {
+          console.warn('Token not found in login response');
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          this.router.navigate(['/main-layout']);
+        });
+      },
+      error: (err) => {
+        console.error('Login failed', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: 'Please check your email and password.',
+          confirmButtonText: 'Try Again'
+        });
       }
+    });
+  }
 
-      this.router.navigate(['/main-layout']);
-    },
-    error: (err) => {
-      console.error('Login failed', err);
-      alert('Login failed. Please check your credentials.');
-    }
-  });
-}
 
-  
   registerUser() {
     if (this.isFormValid()) {
       if (this.RegisterRequest.Password !== this.RegisterRequest.ConfirmPassword) {
-        alert('Passwords do not match!');
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Passwords do not match!'
+        });
         return;
       }
 
-      // إنشاء FormData لإرسال البيانات
       const formData = new FormData();
 
-      // إضافة جميع الحقول إلى FormData
       Object.keys(this.RegisterRequest).forEach(key => {
         const value = this.RegisterRequest[key as keyof RegisterRequest];
         if (value !== null && value !== undefined) {
@@ -125,39 +134,58 @@ loginUser(loginModel: LoginModel) {
 
       this._authService.registerWithFormData(formData).subscribe({
         next: (res: any) => {
-          alert('Registration successful!');
+          Swal.fire({
+            icon: 'success',
+            title: 'Registration Successful',
+            text: 'You can now log in!'
+          });
           this.isloginview = true;
           this.resetRegisterForm();
         },
         error: (err) => {
           console.error('Registration error:', err);
-        
+
           if (err.error && err.error.errors) {
             const validationErrors = err.error.errors;
-            let message = 'Registration failed due to the following errors:\n';
+            let htmlMessage = '<ul>';
             for (const field in validationErrors) {
               if (validationErrors.hasOwnProperty(field)) {
-                message += `${field}: ${validationErrors[field].join(', ')}\n`;
+                htmlMessage += `<li><strong>${field}</strong>: ${validationErrors[field].join(', ')}</li>`;
               }
             }
-            alert(message);
+            htmlMessage += '</ul>';
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Validation Errors',
+              html: htmlMessage
+            });
           } else {
-            alert('Registration failed. Please try again.');
+            Swal.fire({
+              icon: 'error',
+              title: 'Registration Failed',
+              text: 'Please try again later.'
+            });
           }
-        }        
+        }
       });
     } else {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Incomplete Form',
+        text: 'Please fill in all required fields.'
+      });
     }
   }
-  
+
+
   isFormValid(): boolean {
     return (
-      !!this.RegisterRequest.Email &&          
-      !!this.RegisterRequest.UserName &&       
-      !!this.RegisterRequest.Password &&       
+      !!this.RegisterRequest.Email &&
+      !!this.RegisterRequest.UserName &&
+      !!this.RegisterRequest.Password &&
       !!this.RegisterRequest.ConfirmPassword &&
-      !!this.RegisterRequest.DisplayName &&    
+      !!this.RegisterRequest.DisplayName &&
       !!this.RegisterRequest.PhoneNumber &&
       !!this.RegisterRequest.Gender
     );
@@ -165,20 +193,20 @@ loginUser(loginModel: LoginModel) {
 
   private resetRegisterForm(): void {
     this.RegisterRequest = {
-      Email: '',      
-      UserName: '',    
-      Password: '',  
-      ConfirmPassword: '',  
-      DisplayName: '', 
-      PhoneNumber: '', 
-      DateOfBirth: '', 
-      Gender: null, 
-      Bio: '', 
-      ProfilePicture: null, 
-      CoverPhoto: null, 
-      City: '', 
-      Street: '', 
-      Country: '', 
+      Email: '',
+      UserName: '',
+      Password: '',
+      ConfirmPassword: '',
+      DisplayName: '',
+      PhoneNumber: '',
+      DateOfBirth: '',
+      Gender: null,
+      Bio: '',
+      ProfilePicture: null,
+      CoverPhoto: null,
+      City: '',
+      Street: '',
+      Country: '',
     };
     this.profilePicturePreview = null;
     this.coverPhotoPreview = null;

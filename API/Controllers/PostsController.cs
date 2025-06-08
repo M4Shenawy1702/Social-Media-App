@@ -12,7 +12,10 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<PostDto>> CreatePost([FromForm] CreatePostDto dto)
         {
-            var post = await _postService.CreatePostAsync(dto);
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var post = await _postService.CreatePostAsync(dto,currentUserId);
             return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
         }
 

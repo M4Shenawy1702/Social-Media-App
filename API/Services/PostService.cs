@@ -11,42 +11,38 @@ namespace API.Services
     internal class PostService(IUnitOfWork _unitOfWork, IMapper _mapper)
         : IPostService
     {
-        public async Task<PostDto> CreatePostAsync(CreatePostDto dto)
+        public async Task<PostDto> CreatePostAsync(CreatePostDto dto, string currentUserId)
         {
+            string? publicUrl = null;
+
+            if (dto.Media is not null)
+            {
+                var fileName = $"{Guid.NewGuid()}_{dto.Media.FileName}";
+                var savePath = Path.Combine("wwwroot", "images", "posts", fileName);
+                publicUrl = $"/images/posts/{fileName}";
+
+                Directory.CreateDirectory(Path.GetDirectoryName(savePath)!);
+
+                using (var stream = new FileStream(savePath, FileMode.CreateNew))
+                {
+                    await dto.Media.CopyToAsync(stream);
+                }
+            }
+
             var post = new Post
             {
                 Content = dto.Content,
-                AuthorId = dto.AuthorId,
+                AuthorId = currentUserId,
                 LastUpdatedAt = DateTime.UtcNow,
-                Media = new List<PostMedia>()
+                MediaUrl = publicUrl!,
             };
-
-            foreach (var file in dto.Media)
-            {
-                var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-                var savePath = Path.Combine("wwwroot", "images", "posts", fileName);
-                var publicUrl = $"/images/posts/{fileName}";
-
-                Directory.CreateDirectory(Path.GetDirectoryName(savePath)!);
-                using (var stream = new FileStream(savePath, FileMode.CreateNew))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                var mediaType = file.ContentType.StartsWith("video") ? MediaType.Video : MediaType.Image;
-
-                post.Media.Add(new PostMedia
-                {
-                    Url = publicUrl,
-                    Type = mediaType
-                });
-            }
 
             _unitOfWork.GetRepository<Post, int>().Add(post);
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<PostDto>(post);
         }
+
 
         public async Task<string> DeletePostAsync(int id, string currentUserId)
         {
@@ -91,12 +87,12 @@ namespace API.Services
                 ?? throw new UserNotFoundException(currentUserId);
 
             var likedPostIds = user.Likes.Select(like => like.PostId).ToList();
-                
+
             var repo = _unitOfWork.GetRepository<Post, int>();
             var posts = await repo.GetAllAsync(new GetPostsByIdsSpecification(likedPostIds));
 
             var likedPostIdSet = _mapper.Map<List<LIkedPostDto>>(posts);
-            
+
             return likedPostIdSet;
         }
 

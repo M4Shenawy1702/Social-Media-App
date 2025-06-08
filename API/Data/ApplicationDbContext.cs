@@ -83,7 +83,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EmailVerification> EmailVerifications { get; set; }
     public DbSet<UserAddress> UserAddresses { get; set; }
     public DbSet<Post> Posts { get; set; }
-    public DbSet<PostMedia> PostMedias { get; set; }
     public DbSet<PostComment> PostComments { get; set; }
     public DbSet<Like> Likes { get; set; }
 }

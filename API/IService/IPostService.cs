@@ -10,7 +10,7 @@ namespace API.Contracts
         Task<PaginatedResult<PostDto>> GetAllPostsAsync(PostQueryParameters parameters, string currentUserId);
         Task<List<LIkedPostDto>> GetLikedPostsAsync(string currentUserId);
         Task<PostDto> GetPostByIdAsync(int id);
-        Task<PostDto> CreatePostAsync(CreatePostDto dto);
+        Task<PostDto> CreatePostAsync(CreatePostDto dto, string currentUserId);
         Task<string> DeletePostAsync(int id , string currentUserId);
         Task<PostDto> UpdatePostAsync(int id, UpdatePostDto dto);
     }

@@ -14,7 +14,7 @@ namespace API.Shared.Dtos.PostDtos
         public string AuthorId { get; set; } = null!;
         public string AuthorName { get; set; } = null!;
         public string AuthorImageUrl { get; set; } = null!;
-        public ICollection<PostMediaDetailsDto> Media { get; set; } = [];
+        public string? MediaUrl { get; set; } 
         public ICollection<CommentDto> Comments { get; set; } = [];
         public int Likes { get; set; }
         public bool IsLiked { get; set; }

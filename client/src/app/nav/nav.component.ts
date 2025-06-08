@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -10,14 +10,18 @@ import {CurrentUser} from '../shared/Contracts/CurrentUser'
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
-export class NavComponent {
+export class NavComponent implements OnInit {
   user: CurrentUser = {} as CurrentUser;
   baseUrl: string = 'http://localhost:5043/';
   showLoggedInNav: boolean = false;
+  currentUserId: string = '';
 
   constructor(public authService: AuthServiceService, private router: Router) {
     this.loadUser();
     this.showLoggedInNav = this.authService.isLoggedIn();
+  }
+  ngOnInit(): void {
+    this.currentUserId = this.getUserId()
   }
 
   loadUser() {

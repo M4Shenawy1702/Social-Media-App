@@ -9,11 +9,15 @@ import {CurrentUser} from '../shared/Contracts/CurrentUser'
   templateUrl: './side-bar.component.html',
   styleUrl: './side-bar.component.scss'
 })
-export class SideBarComponent {
+export class SideBarComponent implements OnInit {
 
   user : CurrentUser  = JSON.parse(localStorage.getItem('user') || '{}');
-
+  currentUserId : string = '';
+  
   constructor(private authService:AuthServiceService) {
+  }
+  ngOnInit(): void {
+    this.currentUserId = this.getUserId();
   }
 
   getUserId(): string {

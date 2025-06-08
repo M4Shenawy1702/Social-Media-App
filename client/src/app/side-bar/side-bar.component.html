@@ -1,11 +1,5 @@
 <div class="sidebar d-flex flex-column flex-shrink-0 p-3" style="width: 280px;">
   <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
-  <!-- <a routerLink="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-bootstrap" viewBox="0 0 16 16">
-      <path d="M5.062 12.8c.568.276 1.356.426 2.287.426 1.293 0 2.244-.2 2.85-.604.605-.404.908-1.02.908-1.849 0-.641-.192-1.144-.576-1.51-.384-.365-.924-.607-1.62-.726v-.078c.568-.13 1.01-.36 1.326-.687.316-.327.474-.75.474-1.27 0-.788-.287-1.38-.86-1.777C9.278 4.329 8.486 4.13 7.437 4.13c-.904 0-1.66.122-2.27.366v8.304zM6.032 6.07c.3-.103.732-.154 1.296-.154.592 0 1.028.097 1.308.29.28.193.42.51.42.951 0 .447-.14.77-.42.97-.28.2-.742.3-1.386.3h-.624V6.07zm0 3.148h.715c.7 0 1.213.108 1.538.323.325.215.487.577.487 1.085 0 .503-.18.864-.54 1.081-.36.217-.872.326-1.536.326-.488 0-.88-.035-1.175-.106V9.218z"/>
-      <path d="M0 4a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V4zm4-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H4z"/>
-    </svg>
-  </a> -->
   <hr>
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
@@ -23,7 +17,7 @@
       </a>
     </li>
     <li>
-      <a [routerLink]="['/main-layout/friend-list']" class="nav-link link-dark" routerLinkActive="active">
+      <a [routerLink]="['/main-layout/friend-list',this.currentUserId]" class="nav-link link-dark" routerLinkActive="active">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-circle" viewBox="0 0 16 16">
           <path d="M11 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
           <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-6.468 10.37c.34-.598.986-1.2 1.856-1.682C4.779 9.72 

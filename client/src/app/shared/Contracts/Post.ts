@@ -1,5 +1,4 @@
 import { PostComment } from "./PostComment";
-import { PostMediaDetails } from "./PostMediaDetails";
 
 export interface Post {
     id: number;
@@ -7,7 +6,7 @@ export interface Post {
     authorId: string;
     authorName: string;
     authorImageUrl: string;
-    media: PostMediaDetails[];
+    mediaUrl: string;
     comments: PostComment[];
     likes: number;
     isLiked: boolean;

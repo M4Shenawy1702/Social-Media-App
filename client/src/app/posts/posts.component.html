@@ -41,11 +41,11 @@
       </div>
 
       <!-- Post media -->
-      <div *ngIf="post.media && post.media.length > 0">
-        <ng-container *ngFor="let media of post.media">
-          <img *ngIf="media.url && isImage(media.url)" [src]="baseUrl + media.url"
+      <div *ngIf="post.mediaUrl">
+        <ng-container>
+          <img *ngIf="post.mediaUrl && isImage(post.mediaUrl)" [src]="baseUrl + post.mediaUrl"
             class="card-img-top object-fit-cover mb-2" style="height: 180px" [alt]="post.authorName + ' post image'" />
-          <video *ngIf="media.url && isVideo(media.url)" [src]="baseUrl + media.url" class="w-100 mb-2"
+          <video *ngIf="post.mediaUrl && isVideo(post.mediaUrl)" [src]="baseUrl + post.mediaUrl" class="w-100 mb-2"
             style="height: 200px;" controls>
             Your browser does not support the video tag.
           </video>
@@ -91,11 +91,11 @@
             <!-- Left: Post media full size -->
             <div class="flex-grow-1 border-end"
               style="max-width: 60%; height: 100%; display: flex; align-items: center; justify-content: center;">
-              <ng-container *ngIf="post.media && post.media.length > 0; else noMedia">
-                <ng-container *ngFor="let media of post.media">
-                  <img *ngIf="isImage(media.url)" [src]="baseUrl + media.url" alt="post image"
+              <ng-container *ngIf="post.mediaUrl ; else noMedia">
+                <ng-container>
+                  <img *ngIf="isImage(post.mediaUrl)" [src]="baseUrl + post.mediaUrl" alt="post image"
                     style="width: 100%; height: 100%; object-fit: contain;" />
-                  <video *ngIf="isVideo(media.url)" [src]="baseUrl + media.url" controls
+                  <video *ngIf="isVideo(post.mediaUrl)" [src]="baseUrl + post.mediaUrl" controls
                     style="width: 100%; height: 100%; object-fit: contain;"></video>
                 </ng-container>
               </ng-container>
@@ -225,7 +225,6 @@
         </div>
       </div>
     </div>
-    <!--Edit Comment Modal -->
     <!-- Edit Comment Modal -->
     <div class="modal fade" id="editCommentModal" tabindex="-1" aria-labelledby="editCommentModalLabel"
       aria-hidden="true">

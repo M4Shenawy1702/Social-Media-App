@@ -58,7 +58,7 @@ export const routes: Routes = [
         title: 'friend-request-list',
       },
       {
-        path: 'friend-list',
+        path: 'friend-list/:id',
         component: FriendsListComponent,
         canActivate: [AuthGuard],
         title: 'friend-list',

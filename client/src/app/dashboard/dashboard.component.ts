@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { UserProfile } from '../shared/Contracts/UserProfile';
-import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
+import { FriendStatus } from "../shared/Contracts/FriendStatus";
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class DashboardComponent {
   currentUserId: string | null = null;
   baseUrl = 'http://localhost:5043/';
 
-  constructor(private http: HttpClient, private friendService: FriendService , private AuthServiceService: AuthServiceService) { }
+  constructor(private http: HttpClient, private friendService: FriendService, private AuthServiceService: AuthServiceService) { }
 
   ngOnInit(): void {
     this.getUsers();

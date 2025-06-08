@@ -63,10 +63,15 @@ export class PostsComponent {
         const post = this.posts.find(p => p.id === postId);
         if (post) post.comments.push(newComment);
         this.commentContents[postId] = '';
+        Swal.fire('Success!', 'Comment added successfully.', 'success');
       },
-      error: (error) => console.error('Error adding comment:', error)
+      error: (error) => {
+        console.error('Error adding comment:', error);
+        Swal.fire('Error', 'Failed to add comment.', 'error');
+      }
     });
   }
+
   onDelete(postId: number) {
     Swal.fire({
       title: 'Are you sure?',
@@ -99,7 +104,7 @@ export class PostsComponent {
     });
   }
   openEditPostModal(post: Post) {
-    this.selectedPost = { ...post }; // Clone the post
+    this.selectedPost = { ...post };
     const modalElement = document.getElementById('editPostModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
@@ -112,59 +117,78 @@ export class PostsComponent {
     this.postService.updatePost(post.id, formData).subscribe({
       next: () => {
         const index = this.posts.findIndex(p => p.id === post.id);
-        if (index !== -1) {
-          this.posts[index] = post;
-        }
+        if (index !== -1) this.posts[index] = post;
+
         const modalElement = document.getElementById('editPostModal');
         if (modalElement) {
           const modal = bootstrap.Modal.getInstance(modalElement);
           modal?.hide();
         }
+
+        Swal.fire('Success!', 'Post updated successfully.', 'success');
       },
-      error: (error) => console.error('Error updating post:', error)
+      error: (error) => {
+        console.error('Error updating post:', error);
+        Swal.fire('Error', 'Failed to update post.', 'error');
+      }
     });
   }
 
   onDeleteComment(commentId: number, postId: number) {
-    this.commentService.deleteComment(commentId).subscribe({
-      next: () => {
-        const post = this.posts.find(p => p.id === postId);
-        if (post) {
-          post.comments = post.comments.filter(comment => comment.id !== commentId);
-        }
-      },
-      error: (error) => console.error('Error deleting comment:', error)
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This comment will be permanently deleted.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.commentService.deleteComment(commentId).subscribe({
+          next: () => {
+            const post = this.posts.find(p => p.id === postId);
+            if (post) {
+              post.comments = post.comments.filter(comment => comment.id !== commentId);
+            }
+            Swal.fire('Deleted!', 'Comment has been deleted.', 'success');
+          },
+          error: (error) => {
+            console.error('Error deleting comment:', error);
+            Swal.fire('Error', 'Failed to delete comment.', 'error');
+          }
+        });
+      }
     });
   }
-openEditCommentModal(comment: PostComment) {
-  this.selectedComment = { ...comment }; 
 
-  const modalElement = document.getElementById('editCommentModal');
-  if (modalElement) {
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
+  onEditComment(comment: PostComment) {
+    const formData = new FormData();
+    formData.append('Content', comment.content);
+    formData.append('AuthorId', comment.authorId.toString());
+    formData.append('PostId', comment.postId.toString());
+
+    this.commentService.updateComment(comment.id, formData).subscribe({
+      next: () => {
+        const post = this.posts.find(p => p.id === comment.postId);
+        if (post) {
+          post.comments = post.comments.map(c => c.id === comment.id ? comment : c);
+        }
+
+        const modalElement = document.getElementById('editCommentModal');
+        if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          modal?.hide();
+        }
+
+        Swal.fire('Updated!', 'Comment updated successfully.', 'success');
+      },
+      error: (error) => {
+        console.error('Error updating comment:', error);
+        Swal.fire('Error', 'Failed to update comment.', 'error');
+      }
+    });
   }
-}
-onEditComment(comment: PostComment) {
-  const formData = new FormData();
-  formData.append('Content', comment.content);
-  formData.append('AuthorId', comment.authorId.toString());
-  formData.append('PostId', comment.postId.toString());
-  this.commentService.updateComment(comment.id, formData).subscribe({
-    next: () => {
-      const post = this.posts.find(p => p.id === comment.postId);
-      if (post) {
-        post.comments = post.comments.map(c => c.id === comment.id ? comment : c);
-      }
-      const modalElement = document.getElementById('editCommentModal');
-      if (modalElement) {
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        modal?.hide();
-      }
-    },
-    error: (error) => console.error('Error updating comment:', error)
-  });
-}
+
 
 
   isVideo(url: string): boolean {

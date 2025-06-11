@@ -13,6 +13,7 @@ import { FriendSendListComponent } from './friend-send-list/friend-send-list.com
 import { SideBarComponent } from './side-bar/side-bar.component';
 import { ChatComponent } from './chat/chat.component';
 import { ConnectionsComponent } from './connections/connections.component';
+import { PostsSearchComponent } from './posts-search/posts-search.component';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,12 @@ export const routes: Routes = [
       {
         path: 'edit/:id',
         component: EditProfileComponent,
+        canActivate: [AuthGuard],
+        title: 'Edit Profile',
+      },
+       {
+        path: 'posts-search/:searchTerm',
+        component: PostsSearchComponent,
         canActivate: [AuthGuard],
         title: 'Edit Profile',
       },

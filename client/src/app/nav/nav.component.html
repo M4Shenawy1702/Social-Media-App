@@ -60,7 +60,7 @@
               <small class="text-muted">{{ result.userName }}</small>
             </div>
           </li>
-          <a routerLink="/main-layout" [queryParams]="{ q: searchTerm }" class="list-group-item text-center text-muted">
+          <a [routerLink]="['/main-layout/posts-search', searchTerm]" class="list-group-item text-center text-muted">
             <i class="bi bi-search me-1"></i> Show results for "{{ searchTerm }}" in posts
           </a>
         </ul>
@@ -70,7 +70,7 @@
         <div *ngIf="searchTerm.trim() && searchResults.length === 0"
           class="position-absolute bg-white border rounded p-2 w-100 z-3 text-center" style="top: 100%;">
           <small class="text-muted">No users found.</small>
-          <a routerLink="/main-layout" [queryParams]="{ q: searchTerm }" class="list-group-item text-center text-muted">
+          <a [routerLink]="['/main-layout/posts-search', searchTerm]" class="list-group-item text-center text-muted">
             <i class="bi bi-search me-1"></i> Show results for "{{ searchTerm }}" in posts
           </a>
         </div>

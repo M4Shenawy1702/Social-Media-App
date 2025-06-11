@@ -1,17 +1,20 @@
 <div class="chat-container">
 
-    <!-- Username Header -->
+  <!-- Username Header -->
   <div class="chat-header">
-    <h2 class="chat-username">{{ receiverName }}</h2>
+    <img class="chat-profile-picture"
+      [src]="user?.profilePictureUrl ? baseUrl + user.profilePictureUrl : 'assets/DefaultProfile.jpg'"
+      alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+
+    <h2 class="chat-username">{{ user?.userName }}</h2>
   </div>
 
   <!-- Messages container -->
   <div #messagesContainer class="messages-container" tabindex="0" aria-live="polite" aria-relevant="additions">
     <div *ngFor="let msg of messages"
-         [ngClass]="{'message-sent': msg.senderId === currentUserId, 'message-received': msg.senderId !== currentUserId}"
-         class="message-bubble"
-         role="listitem"
-         aria-label="{{ msg.senderId === currentUserId ? 'Your message' : 'Message from ' + msg.senderId }}">
+      [ngClass]="{'message-sent': msg.senderId === currentUserId, 'message-received': msg.senderId !== currentUserId}"
+      class="message-bubble" role="listitem"
+      aria-label="{{ msg.senderId === currentUserId ? 'Your message' : 'Message from ' + msg.senderId }}">
 
       <div class="sender-label" *ngIf="msg.senderId === currentUserId">You</div>
       <div class="sender-label" *ngIf="msg.senderId !== currentUserId">{{ receiverName }}</div>
@@ -24,13 +27,8 @@
 
   <!-- Input and send button -->
   <div class="input-container">
-    <input
-      [(ngModel)]="newMessage"
-      placeholder="Type a message..."
-      (keyup.enter)="sendMessage()"
-      aria-label="Type a message"
-      autocomplete="off"
-    />
+    <input [(ngModel)]="newMessage" placeholder="Type a message..." (keyup.enter)="sendMessage()"
+      aria-label="Type a message" autocomplete="off" />
     <button (click)="sendMessage()" aria-label="Send message">Send</button>
   </div>
 

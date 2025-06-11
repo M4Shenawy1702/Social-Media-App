@@ -15,7 +15,6 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ApplicationUser>> GetUserAsync(string id)
         {
-            // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userService.GetUserProfileAsync(id);
             return Ok(user);
         } 

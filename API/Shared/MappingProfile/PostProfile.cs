@@ -11,7 +11,7 @@ namespace API.Shared.MappingProfile
             CreateMap<Post, PostDto>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.LastUpdatedAt))
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Count))
-                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.UserName))
+                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.DisplayName))
                 .ForMember(dest => dest.AuthorImageUrl, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl));
 
             CreateMap<Post, LIkedPostDto>()

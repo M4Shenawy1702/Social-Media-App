@@ -1,0 +1,23 @@
+<div class="container-fluid d-flex justify-content-center">
+  <ul class="nav nav-tabs bg-light px-4 w-100 justify-content-center" style="max-width: 600px;">
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/main-layout/connections/friend-list', currentUserId]" routerLinkActive="active">
+        <i class="bi bi-people fs-5" title="Friends"></i> Friends
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/main-layout/connections/friend-send-list']" routerLinkActive="active">
+        <i class="bi bi-people fs-5" title="Sent Requests"></i> Sent Friend Requests
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/main-layout/connections/friend-request-list']" routerLinkActive="active">
+        <i class="bi bi-people fs-5" title="Requests"></i> Friend Requests
+      </a>
+    </li>
+  </ul>
+</div>
+
+<hr />
+
+<router-outlet></router-outlet>

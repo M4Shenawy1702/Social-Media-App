@@ -73,7 +73,6 @@ export class WelcomeComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('Content', this.postContent);
-    formData.append('AuthorId', this.CurrentUserId);
 
     this.selectedFiles.forEach(file => {
       formData.append('Media', file);
@@ -124,7 +123,6 @@ export class WelcomeComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
 
-    // Clean up previous previews
     this.mediaPreviews.forEach(p => URL.revokeObjectURL(p.url));
     this.mediaPreviews = [];
     this.selectedFiles = [];
@@ -135,8 +133,8 @@ export class WelcomeComponent implements OnInit {
       this.selectedFiles.push(file);
       this.mediaPreviews.push({
         file,
-        url: objectUrl,  // Use the raw URL here
-        safeUrl: this.sanitizer.bypassSecurityTrustUrl(objectUrl), // Store sanitized version if needed
+        url: objectUrl,  
+        safeUrl: this.sanitizer.bypassSecurityTrustUrl(objectUrl), 
         type: file.type,
         name: file.name
       });

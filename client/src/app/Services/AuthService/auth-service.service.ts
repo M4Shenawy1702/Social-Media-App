@@ -7,14 +7,14 @@ import { Router } from '@angular/router';
 })
 export class AuthServiceService {
   private isAuthenticated = false;
-  private user: any = null; // هنا لتخزين بيانات المستخدم عند تسجيل الدخول
+  private user: any = null; 
 
   baseurl = 'http://localhost:5043/api/Authentication/';
 
   constructor(private http: HttpClient, private router: Router) {
     this.isAuthenticated = localStorage.getItem('isLoggedIn') === 'true';
     if (this.isAuthenticated) {
-      this.loadUserData(); // تحميل بيانات المستخدم من الـ localStorage
+      this.loadUserData(); 
     }
   }
 
@@ -34,7 +34,6 @@ export class AuthServiceService {
     return this.isAuthenticated || localStorage.getItem('isLoggedIn') === 'true';
   }
 
-  // دالة لتحميل بيانات المستخدم من localStorage
   private loadUserData() {
     const userData = localStorage.getItem('user');
     if (userData) {

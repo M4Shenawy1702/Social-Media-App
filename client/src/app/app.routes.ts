@@ -12,11 +12,12 @@ import { FriendsListComponent } from './friend-list/friend-list.component';
 import { FriendSendListComponent } from './friend-send-list/friend-send-list.component';
 import { SideBarComponent } from './side-bar/side-bar.component';
 import { ChatComponent } from './chat/chat.component';
+import { ConnectionsComponent } from './connections/connections.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'main-layout',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -52,25 +53,32 @@ export const routes: Routes = [
         title: 'Edit Profile',
       },
       {
-        path: 'friend-request-list',
-        component: FriendRequestListComponent,
-        canActivate: [AuthGuard],
-        title: 'friend-request-list',
+        path: 'connections',
+        component: ConnectionsComponent,
+        children: [
+          {
+            path: 'friend-request-list',
+            component: FriendRequestListComponent,
+            canActivate: [AuthGuard],
+            title: 'friend-request-list',
+          },
+          {
+            path: 'friend-list/:id',
+            component: FriendsListComponent,
+            canActivate: [AuthGuard],
+            title: 'friend-list',
+          },
+          {
+            path: 'friend-send-list',
+            component: FriendSendListComponent,
+            canActivate: [AuthGuard],
+            title: 'friend-send-list',
+          },
+          { path: '', redirectTo: 'friend-request-list', pathMatch: 'full' } 
+        ]
       },
       {
-        path: 'friend-list/:id',
-        component: FriendsListComponent,
-        canActivate: [AuthGuard],
-        title: 'friend-list',
-      },
-      {
-        path: 'friend-send-list',
-        component: FriendSendListComponent,
-        canActivate: [AuthGuard],
-        title: 'friend-send-list',
-      },
-      {
-        path: 'chat/:id/:name',
+        path: 'chat/:id',
         component: ChatComponent,
         canActivate: [AuthGuard],
         title: 'chat',

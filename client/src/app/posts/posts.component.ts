@@ -7,14 +7,14 @@ import { PostsService } from '../Services/posts.service';
 import { CommentsService } from '../Services/comments.service';
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 declare var bootstrap: any;
 
 
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.scss']
 })
@@ -188,8 +188,6 @@ export class PostsComponent {
       }
     });
   }
-
-
 
   isVideo(url: string): boolean {
     return /\.(mp4|webm|ogg)$/i.test(url);

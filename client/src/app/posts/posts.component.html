@@ -11,10 +11,13 @@
     <div *ngFor="let post of posts" class="card mb-4">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2">
-          <img [src]="post.authorImageUrl ? baseUrl + post.authorImageUrl : 'assets/DefaultProfile.jpg'"
-            alt="{{ post.authorName }} profile image" class="rounded-circle me-2"
-            style="width: 40px; height: 40px; object-fit: cover;">
-          <h5 class="mb-0">{{ post.authorName }}</h5>
+          <a class="d-flex align-items-center" [routerLink]="['/main-layout/profile', post.authorId]"
+            style="cursor: pointer;  text-decoration: none; color: inherit;">
+            <img [src]="post.authorImageUrl ? baseUrl + post.authorImageUrl : 'assets/DefaultProfile.jpg'"
+              alt="{{ post.authorName }} profile image" class="rounded-circle me-2"
+              style="width: 40px; height: 40px; object-fit: cover;">
+            <h5 class="mb-0">{{ post.authorName }}</h5>
+          </a>
           <div *ngIf="CurrentUserId === post.authorId" class="dropdown ms-auto">
             <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#"
               [id]="'userDropdown' + post.id" role="button" data-bs-toggle="dropdown" aria-expanded="false"
@@ -31,9 +34,9 @@
               <li>
                 <hr class="dropdown-divider" />
               </li>
-              <li><a (click)="onDelete(post.id)" class="dropdown-item text-danger">
+              <li><button (click)="onDelete(post.id)" class="dropdown-item text-danger">
                   <i class="bi bi-trash me-1"></i> Delete Post
-                </a></li>
+                </button></li>
             </ul>
           </div>
         </div>
@@ -55,7 +58,8 @@
       <!-- Likes and Comments status -->
       <div class="card-body d-flex justify-content-start align-items-center gap-3">
         <p class="mb-0 fw-bold">{{ post.likes }} Likes</p>
-        <p class="mb-0 fw-bold" [attr.data-bs-target]="'#AddCommentModal' + post.id" data-bs-toggle="modal" style="cursor: pointer;">{{ post.comments.length }} Comments</p>
+        <p class="mb-0 fw-bold" [attr.data-bs-target]="'#AddCommentModal' + post.id" data-bs-toggle="modal"
+          style="cursor: pointer;">{{ post.comments.length }} Comments</p>
       </div>
 
 
@@ -179,16 +183,26 @@
 
 
               <!-- Comment input fixed footer -->
-              <div class="modal-footer d-flex align-items-center gap-2 p-2 mt-auto"
-                style="background-color: #f0f2f5; border-top: 1px solid #ddd;">
-                <input type="text" class="form-control rounded-pill" placeholder="Write a comment..."
-                  [(ngModel)]="commentContents[post.id]"
-                  style="padding: 10px 20px; border: none; box-shadow: inset 0 0 5px #ccc;" />
+              <div class="modal-footer d-flex align-items-center gap-2 p-3 mt-auto bg-light border-top">
+                <!-- Comment input -->
+                <input type="text" class="form-control rounded-pill shadow-sm px-4 py-2"
+                  placeholder="Write a comment..." [(ngModel)]="commentContents[post.id]"
+                  style="border: 1px solid #ccc; flex: 1;" />
+
+                <!-- Send comment button -->
                 <button type="button"
-                  class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center"
-                  style="width: 36px; height: 36px; padding: 0;" (click)="addComment(post.id)"
-                  [disabled]="!commentContents[post.id]?.trim()">
+                  class="btn btn-primary d-flex align-items-center justify-content-center p-2 rounded-circle"
+                  style="width: 40px; height: 40px;" (click)="addComment(post.id)"
+                  [disabled]="!commentContents[post.id]?.trim()" aria-label="Send comment">
                   <i class="bi bi-chat-fill" style="font-size: 18px;"></i>
+                </button>
+
+                <!-- Like button -->
+                <button
+                  class="btn btn-outline-danger d-flex align-items-center justify-content-center p-2 rounded-circle"
+                  style="width: 40px; height: 40px;" (click)="onLike(post); $event.preventDefault()"
+                  aria-label="Like post">
+                  <i class="bi" [ngClass]="post.isLiked ? 'bi-heart-fill' : 'bi-heart'" style="font-size: 18px;"></i>
                 </button>
               </div>
 

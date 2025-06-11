@@ -4,6 +4,9 @@ import { ChatSignalrService } from '../Services/chat-signal-r.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChatMessage } from '../shared/Contracts/ChatMessage';
+import { UserProfile } from '../shared/Contracts/UserProfile';
+import { UserService } from '../Services/user.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -17,15 +20,26 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   receiverId = '';
   receiverName = '';
   currentUserId = '';
+  user: UserProfile | null = null;
+ baseUrl = 'http://localhost:5043/';
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
-  constructor(private chatService: ChatSignalrService, private route: ActivatedRoute) {}
+  constructor(private chatService: ChatSignalrService, private route: ActivatedRoute, private userService: UserService) { }
 
   ngOnInit(): void {
     this.receiverId = this.route.snapshot.paramMap.get('id') || '';
     this.receiverName = this.route.snapshot.paramMap.get('name') || '';
     const user = localStorage.getItem('user');
+
+    this.userService.getUserById(this.receiverId).subscribe({
+      next: (profile) => {
+        this.user = profile;
+      },
+      error: (err) => {
+        console.error('Failed to load user profile:', err);
+      }
+    });
 
     if (user) {
       const userObj = JSON.parse(user);
@@ -77,4 +91,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {
     this.chatService.stopConnection?.();
   }
+  getUser(userId: string): Observable<UserProfile> {
+    return this.userService.getUserById(userId);
+  }
+
 }

@@ -3,7 +3,7 @@
   <hr>
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a routerLink="/" class="nav-link link-dark" aria-current="page" routerLinkActive="active">
+      <a routerLink="/main-layout" class="nav-link link-dark" aria-current="page" routerLinkActive="active">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
           <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 
           8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 
@@ -14,39 +14,6 @@
           0 0 1-.5-.5V7.207l5-5z"/>
         </svg>
         Home
-      </a>
-    </li>
-    <li>
-      <a [routerLink]="['/main-layout/friend-list',this.currentUserId]" class="nav-link link-dark" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-circle" viewBox="0 0 16 16">
-          <path d="M11 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-6.468 10.37c.34-.598.986-1.2 1.856-1.682C4.779 9.72 
-          6.384 9.5 8 9.5s3.221.22 4.612.688c.87.482 
-          1.516 1.084 1.856 1.682A7 7 0 0 0 8 1z"/>
-        </svg>
-        Friends
-      </a>
-    </li>
-    <li>
-      <a [routerLink]="['/main-layout/friend-send-list']" class="nav-link link-dark" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-circle" viewBox="0 0 16 16">
-          <path d="M11 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-6.468 10.37c.34-.598.986-1.2 1.856-1.682C4.779 9.72 
-          6.384 9.5 8 9.5s3.221.22 4.612.688c.87.482 
-          1.516 1.084 1.856 1.682A7 7 0 0 0 8 1z"/>
-        </svg>
-        Friend Sent Requests
-      </a>
-    </li>
-    <li>
-      <a [routerLink]="['/main-layout/friend-request-list']" class="nav-link link-dark" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-circle" viewBox="0 0 16 16">
-          <path d="M11 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-6.468 10.37c.34-.598.986-1.2 1.856-1.682C4.779 9.72 
-          6.384 9.5 8 9.5s3.221.22 4.612.688c.87.482 
-          1.516 1.084 1.856 1.682A7 7 0 0 0 8 1z"/>
-        </svg>
-        Friend Requests
       </a>
     </li>
   </ul>

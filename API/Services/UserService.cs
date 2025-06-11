@@ -14,12 +14,17 @@ namespace API.Services
         {
             var specs = new GetUserWithAddressSpesification(parameters);
             var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
+
             var users = await userRepo.GetAllAsync(specs);
+
             var data = _mapper.Map<IEnumerable<UserDetailsDto>>(users);
-            var pageCount = data.Count();
+
             var totalCount = await userRepo.CountAsync(new UserCountSpecifications(parameters));
+            var pageCount = (int)Math.Ceiling((double)totalCount / parameters.PageSize);
+
             return new(parameters.PageIndex, pageCount, totalCount, data);
         }
+
 
         public async Task<UserDetailsDto> GetUserProfileAsync(string userId)
         {

@@ -44,7 +44,7 @@
             </button>
 
             <!-- Message button always shown -->
-            <a [routerLink]="['/main-layout/chat', userId]"
+            <a [routerLink]="['/main-layout/chat-dash-board/chat', userId]"
               class="btn btn-outline-primary rounded-pill px-3">
               <i class="bi bi-chat-left-text me-1"></i> Message
             </a>
@@ -65,7 +65,7 @@
           <!-- Followers / Following -->
           <div class="p-4 text-black bg-body-tertiary">
             <div class="d-flex justify-content-start align-items-center text-center text-body">
-              <div class="px-3 text-center" [routerLink]="['/main-layout/friend-list',userProfile?.id]" style="cursor: pointer;" hovwer
+              <div class="px-3 text-center" [routerLink]="['/main-layout/connections/friend-list', userProfile?.id]" style="cursor: pointer;" hovwer
                 class="text-primary">
                 <p class="mb-1 h5 fw-bold">{{userProfile?.friendsCount}}</p>
                 <p class="small text-muted mb-0">Friend</p>

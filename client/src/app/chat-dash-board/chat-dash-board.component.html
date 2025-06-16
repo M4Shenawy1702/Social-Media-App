@@ -1,0 +1,22 @@
+<div class="container-fluid">
+    <div class="row">
+        <!-- Friends List -->
+        <div class="col-4 border-end bg-light" style="height: 100vh; overflow-y: auto;">
+            <h5 class="p-3 fw-bold">Friends</h5>
+            <ul class="list-group">
+                <li *ngFor="let friend of friends" [routerLink]="['chat', friend.friendId]"
+                    class="list-group-item list-group-item-action d-flex align-items-center" routerLinkActive="active"
+                    style="cursor: pointer;">
+                    <img [src]="friend.profilePictureUrl ? baseUrl + friend.profilePictureUrl : 'assets/DefaultProfile.jpg'"
+                        alt="Profile" width="40" height="40" class="rounded-circle me-2" />
+                    {{ friend.friendName }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="col-8" style="height: 100vh; overflow-y: auto;">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

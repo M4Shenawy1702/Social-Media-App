@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace API.Shared.Exceptions
 { 
     public class RelationshipNotFoundException ()
-    : Exception($"Friend request was not Found!")
+    : NotFoundException($"Friend request was not Found!")
     {
         
     }

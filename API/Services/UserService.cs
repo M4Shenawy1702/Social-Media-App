@@ -50,8 +50,8 @@ namespace API.Services
                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null) throw new UserNotFoundException(userId);
 
-            string profilePicturePath = null;
-            string coverPhotoPath = null;
+            string? profilePicturePath = null;
+            string? coverPhotoPath = null;
 
             if (updateDto.ProfilePicture != null)
             {

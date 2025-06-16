@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 namespace API.Shared.Exceptions
 {
     public class LikeNotFoundException()
-    : Exception($"Like With was not found");
+    : NotFoundException($"Like With was not found");
 }

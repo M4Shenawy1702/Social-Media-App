@@ -58,14 +58,14 @@ private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
 
     switch (ex)
     {
-        case UserNotFoundException userNotFoundEx:
+        case NotFoundException NotFoundEx:
             response.StatusCode = (int)HttpStatusCode.NotFound;
-            response.ErrorMessages = userNotFoundEx.Message;
+            response.ErrorMessages = NotFoundEx.Message;
             statusCode = HttpStatusCode.NotFound;
             break;
 
         case ServiceException serviceEx:
-            response.StatusCode = (int)HttpStatusCode.BadRequest; 
+            response.StatusCode = (int)serviceEx.StatusCode; 
             response.ErrorMessages = serviceEx.Message;  
             statusCode = HttpStatusCode.BadRequest;
             break;

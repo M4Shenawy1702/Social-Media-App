@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Shared.Dtos;
+using API.Shared.Dtos.CommentDtos;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace API.Services
 {
-        public class MessageService(IUnitOfWork _unitOFWork ,IMapper _mapper)
-        : IMessageService
-        {
+    public class MessageService(IUnitOfWork _unitOFWork, IMapper _mapper)
+    : IMessageService
+    {
 
         public async Task SaveMessageAsync(MessageDto dto)
         {
@@ -52,7 +53,28 @@ namespace API.Services
             var orderedMessages = chat.Messages.OrderBy(m => m.Timestamp).ToList();
             return _mapper.Map<IEnumerable<MessageDetailsDto>>(orderedMessages);
         }
-
-}
+        public async Task<bool> DeleteMessage(int messageId, string userId)
+        {
+            var messageRepo = _unitOFWork.GetRepository<Message, int>();
+            var message = await messageRepo.GetAsync(new GetMessageSpecification(messageId));
+            if (message == null)
+                return false;
+            if (message.SenderId != userId)
+                return false;
+            messageRepo.Delete(message);
+            await _unitOFWork.SaveChangesAsync();
+            return true;
+        }
+        public async Task<CommentDto> UpdateMessage(int messageId, string content, string userId)
+        {
+            var messageRepo = _unitOFWork.GetRepository<Message, int>();
+            var message = await messageRepo.GetAsync(new GetMessageSpecification(messageId));
+            if (message == null || message.SenderId != userId)
+                throw new MessageNotFoundException();
+            message.Content = content;
+            await _unitOFWork.SaveChangesAsync();
+            return _mapper.Map<CommentDto>(message);
+        }
+    }
 
 }

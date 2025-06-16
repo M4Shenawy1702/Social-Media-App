@@ -14,6 +14,7 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { ChatComponent } from './chat/chat.component';
 import { ConnectionsComponent } from './connections/connections.component';
 import { PostsSearchComponent } from './posts-search/posts-search.component';
+import { ChatDashBoardComponent } from './chat-dash-board/chat-dash-board.component';
 
 export const routes: Routes = [
   {
@@ -53,7 +54,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         title: 'Edit Profile',
       },
-       {
+      {
         path: 'posts-search/:searchTerm',
         component: PostsSearchComponent,
         canActivate: [AuthGuard],
@@ -81,14 +82,22 @@ export const routes: Routes = [
             canActivate: [AuthGuard],
             title: 'friend-send-list',
           },
-          { path: '', redirectTo: 'friend-request-list', pathMatch: 'full' } 
+          { path: '', redirectTo: 'friend-request-list', pathMatch: 'full' }
         ]
       },
       {
-        path: 'chat/:id',
-        component: ChatComponent,
+        path: 'chat-dash-board',
+        component: ChatDashBoardComponent,
         canActivate: [AuthGuard],
-        title: 'chat',
+        title: 'chat-dash-board',
+        children: [
+          {
+            path: 'chat/:id',
+            component: ChatComponent,
+            canActivate: [AuthGuard],
+            title: 'chat',
+          },
+        ]
       },
     ],
   },

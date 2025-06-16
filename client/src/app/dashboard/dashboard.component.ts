@@ -27,26 +27,49 @@ export class DashboardComponent {
     count: 0,
     data: []
   };
-
+  pages: number[] = [];
   isLoading = false;
   errorMessage = '';
-  currentUserId: string | null = null;
   baseUrl = 'http://localhost:5043/';
 
   constructor(private http: HttpClient, private friendService: FriendService, private AuthServiceService: AuthServiceService, private userService: UserService) { }
 
   ngOnInit(): void {
     this.getUsers();
-    this.currentUserId = this.AuthServiceService.getCurrentUserId();
+  }
+  get totalPages(): number {
+    return Math.ceil(this.users.count / this.users.pageSize);
+  }
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.users.pageIndex = page;
+    this.getUsers();
   }
 
+  generatePages(): void {
+    const maxPagesToShow = 5;
+    const currentPage = this.users.pageIndex;
+    const totalPages = this.totalPages;
+
+    let start = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let end = Math.min(totalPages, start + maxPagesToShow - 1);
+
+    if (end - start < maxPagesToShow - 1) {
+      start = Math.max(1, end - maxPagesToShow + 1);
+    }
+
+    this.pages = [];
+    for (let i = start; i <= end; i++) {
+      this.pages.push(i);
+    }
+  }
   getUsers(): void {
     this.isLoading = true;
 
     const queryParams: UserQueryParameters = {
       pageIndex: this.users.pageIndex,
       pageSize: this.users.pageSize,
-      searchByName: undefined, 
+      searchByName: undefined,
     };
 
     this.userService.getUsers(queryParams).subscribe({
@@ -62,25 +85,13 @@ export class DashboardComponent {
         this.users.pageSize = response.pageSize;
 
         this.isLoading = false;
+
+
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = 'Failed to load the data';
         console.error(err);
-      }
-    });
-  }
-
-  onAddFriend(receiverId: string) {
-    this.isLoading = true;
-    this.friendService.addFriend(this.currentUserId, receiverId).subscribe({
-      next: (res) => {
-        console.log('Friend added!', res);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error adding friend:', err);
-        this.isLoading = false;
       }
     });
   }

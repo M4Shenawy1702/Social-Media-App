@@ -52,19 +52,19 @@
           </div>
 
           <!-- File Upload -->
-            <div class="mb-4">
-              <label for="media" class="form-label fw-semibold">Media (Images/Videos)</label>
-              <div class="border rounded-3 p-3 text-center bg-light position-relative">
-                <input id="media" type="file" class="form-control" (change)="handleFileInput($event)"
-                  accept="image/*,video/*" multiple hidden #fileInput />
-                <p class="text-muted">Drag & drop files here, or
-                  <span class="text-primary text-decoration-underline" style="cursor:pointer;"
-                    (click)="fileInput.click()">
-                    browse
-                  </span>
-                </p>
-              </div>
+          <div class="mb-4">
+            <label for="media" class="form-label fw-semibold">Media (Images/Videos)</label>
+            <div class="border rounded-3 p-3 text-center bg-light position-relative">
+              <input id="media" type="file" class="form-control" (change)="handleFileInput($event)"
+                accept="image/*,video/*" multiple hidden #fileInput />
+              <p class="text-muted">Drag & drop files here, or
+                <span class="text-primary text-decoration-underline" style="cursor:pointer;"
+                  (click)="fileInput.click()">
+                  browse
+                </span>
+              </p>
             </div>
+          </div>
 
           <!-- Preview Section -->
           <div class="d-flex flex-wrap gap-3 mt-3 justify-content-start" *ngIf="mediaPreviews.length > 0">
@@ -100,7 +100,10 @@
 
 
   <!-- Posts List -->
-  <div class="mt-4">
+  <!-- Posts List with Infinite Scroll -->
+  <!-- <div class="mt-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
+    (scrolled)="onScrollDown()">
     <app-posts [posts]="posts?.data"></app-posts>
-  </div>
+  </div> -->
+
 </div>

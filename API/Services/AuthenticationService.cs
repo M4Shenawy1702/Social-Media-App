@@ -45,8 +45,8 @@ namespace API.Services
             await ValidateUserExistence(request);
 
             // Handle image uploads
-            string profilePicturePath = null;
-            string coverPhotoPath = null;
+            string? profilePicturePath = null;
+            string? coverPhotoPath = null;
 
             if (request.ProfilePicture != null)
             {

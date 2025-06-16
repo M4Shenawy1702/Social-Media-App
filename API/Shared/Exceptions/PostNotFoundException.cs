@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 namespace API.Shared.Exceptions
 {
     public class PostNotFoundException()
-    : Exception($"Post was not found");
+    : NotFoundException($"Post was not found");
 }

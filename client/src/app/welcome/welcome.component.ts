@@ -12,13 +12,16 @@ import { Post } from '../shared/Contracts/Post';
 import { CurrentUser } from '../shared/Contracts/CurrentUser';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+
+
 
 declare const bootstrap: any;
 
 interface MediaPreview {
   file: File;
-  url: string;  // Store the raw URL here
-  safeUrl: SafeUrl;  // Store sanitized URL separately if needed
+  url: string;
+  safeUrl: SafeUrl;
   type: string;
   name: string;
 }
@@ -90,10 +93,13 @@ export class WelcomeComponent implements OnInit {
           modal?.hide();
         }
 
+        this.posts.pageIndex = 1;
         this.loadPosts();
+
+        Swal.fire('Success', 'Post created successfully.', 'success');
       },
       error: (err) => {
-        Swal.fire('Error', 'Failed to create post.', err.message );
+        Swal.fire('Error', 'Failed to create post.', err.message);
       }
     });
   }
@@ -109,14 +115,26 @@ export class WelcomeComponent implements OnInit {
 
     this.postsService.getAllPosts(params).subscribe({
       next: (data) => {
-        this.posts = data;
+        if (this.posts.pageIndex === 1) {
+          this.posts = data;
+        } else {
+          this.posts.data = [...this.posts.data, ...data.data];
+          this.posts.count = data.count;
+        }
+
         this.isLoading = false;
       },
       error: () => {
-       Swal.fire('Error', 'Failed to load posts.', 'error');
+        Swal.fire('Error', 'Failed to load posts.', 'error');
         this.isLoading = false;
       }
     });
+  }
+  onScrollDown(): void {
+    if (this.posts.data.length >= this.posts.count) return;
+
+    this.posts.pageIndex++;
+    this.loadPosts();
   }
 
   handleFileInput(event: Event): void {
@@ -133,8 +151,8 @@ export class WelcomeComponent implements OnInit {
       this.selectedFiles.push(file);
       this.mediaPreviews.push({
         file,
-        url: objectUrl,  
-        safeUrl: this.sanitizer.bypassSecurityTrustUrl(objectUrl), 
+        url: objectUrl,
+        safeUrl: this.sanitizer.bypassSecurityTrustUrl(objectUrl),
         type: file.type,
         name: file.name
       });

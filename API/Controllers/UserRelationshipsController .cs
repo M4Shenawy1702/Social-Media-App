@@ -83,7 +83,7 @@ namespace API.Controllers
         [HttpGet("get-friend-status/{FriendId}")]
         public async Task<IActionResult> GetFriendRequests(string FriendId)
         {
-             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrWhiteSpace(currentUserId))
                 return Unauthorized("User ID not found in token.");
             var friendRequests = await _userRelationshipService.GetFriendStatusAsync(currentUserId!, FriendId);

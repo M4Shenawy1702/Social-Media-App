@@ -14,7 +14,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.scss']
 })

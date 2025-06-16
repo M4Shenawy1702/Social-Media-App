@@ -22,13 +22,15 @@ export class FriendsListComponent implements OnInit {
   friendList: FriendListDetails[] = [];
   baseUrl = 'http://localhost:5043/';
   currentUserId: string;
+  userId: string;
 
   constructor(private _authService: AuthServiceService, private http: HttpClient, private friendService: FriendService, private route: ActivatedRoute) { }
 
 ngOnInit(): void {
-  const routeId = this.route.snapshot.paramMap.get('id');
-  this.currentUserId = routeId ?? this._authService.getCurrentUserId();
-  this.getAllFriends(this.currentUserId);
+    this.route.params.subscribe(params => {
+      this.userId = params['id'];
+      this.getAllFriends(this.userId);
+    })
 }
 
   getAllFriends(userId: string): void {

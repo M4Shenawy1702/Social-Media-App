@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace API.Shared.Exceptions
 {
-    public sealed class BadRequestException(List<string> errors)
+    public class BadRequestException(List<string> errors)
         : Exception("Validation faild")
     {
         public List<string> Errors { get; } = errors;

@@ -55,7 +55,7 @@ export class FriendService {
     );
   }
 
-  getFriendList(userId: string): Observable<FriendListDetails[]> {
+  getFriendList(userId : string): Observable<FriendListDetails[]> {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
       return throwError(() => new Error('Authentication token not found'));

@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 namespace API.Shared.Exceptions
 {
     public class LikeAlreadyExistsException()
-    :Exception("Like Alread yExists");
+    :Exception("Like Already Exists");
 }

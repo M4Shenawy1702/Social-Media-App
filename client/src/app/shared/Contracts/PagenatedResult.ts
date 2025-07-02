@@ -1,6 +1,6 @@
 export interface PagenatedResult<TType> {
   pageIndex: number;
-  pageSize: number;
+  pageCount: number;
   count: number;
   data: TType[];
 }

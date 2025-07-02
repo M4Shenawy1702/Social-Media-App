@@ -11,7 +11,7 @@ namespace API.IService
     {
         // User Profile Operations
         Task<UserDetailsDto> GetUserProfileAsync(string userId);
-        Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters);
+        Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters,string currentUserId);
         Task<UserDetailsDto> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto);
 
         // Online Status Management

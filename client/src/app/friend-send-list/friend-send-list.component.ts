@@ -1,7 +1,7 @@
 import { FriendService } from './../Services/friend.service';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 import { RouterLink } from '@angular/router';
 
@@ -31,7 +31,7 @@ getallsentrequests(): void {
     ? { Authorization: `Bearer ${token}` }
     : {};
 
-  this.http.get<any[]>(`http://localhost:5043/api/UserRelationships/get-sent-requests/${currentUserId}`, { headers }).subscribe({
+  this.http.get<any[]>(`http://localhost:5043/api/UserRelationships/get-sent-requests`, { headers }).subscribe({
     next: (response) => {
       console.log('Data received:', response);
       this.friendSentRequests = response.filter(user => user.id !== currentUserId);

@@ -1,7 +1,7 @@
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { AuthServiceService } from './../Services/AuthService/auth-service.service';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PostsService } from '../Services/posts.service';
@@ -12,7 +12,7 @@ import { Post } from '../shared/Contracts/Post';
 import { CurrentUser } from '../shared/Contracts/CurrentUser';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { environment } from '../../environments/environment'; 
 
 
 
@@ -31,10 +31,10 @@ interface MediaPreview {
   standalone: true,
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
-  imports: [CommonModule, NgbModule, RouterModule, FormsModule, PostsComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PostsComponent, InfiniteScrollDirective],
 })
 export class WelcomeComponent implements OnInit {
-  baseUrl = 'http://localhost:5043/';
+  baseUrl = environment.baseUrl;
   isLoading = false;
   errorMessage = '';
   postContent: string = '';
@@ -44,7 +44,7 @@ export class WelcomeComponent implements OnInit {
 
   posts: PagenatedResult<Post> = {
     pageIndex: 1,
-    pageSize: 10,
+    pageCount: 10,
     count: 0,
     data: []
   };
@@ -110,7 +110,7 @@ export class WelcomeComponent implements OnInit {
 
     const params: PostQueryParameters = {
       pageIndex: this.posts.pageIndex,
-      pageSize: this.posts.pageSize,
+      pageSize: this.posts.pageCount,
     };
 
     this.postsService.getAllPosts(params).subscribe({

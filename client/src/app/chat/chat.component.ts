@@ -14,6 +14,7 @@ import { ChatMessage } from '../shared/Contracts/ChatMessage';
 import { UserProfile } from '../shared/Contracts/UserProfile';
 import { UserService } from '../Services/user.service';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment'; 
 
 interface ChatMessageWithUI extends ChatMessage {
   showMenu?: boolean;
@@ -32,7 +33,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   receiverId = '';
   currentUserId = '';
   user: UserProfile | null = null;
-  baseUrl = 'http://localhost:5043/';
+  baseUrl = environment.baseUrl;
   editMessage: ChatMessageWithUI | null = null;
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;

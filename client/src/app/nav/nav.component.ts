@@ -7,6 +7,7 @@ import { CurrentUser } from '../shared/Contracts/CurrentUser'
 import { debounceTime, Subject } from 'rxjs';
 import { FormsModule, NgModel } from '@angular/forms';
 import { UserQueryParameters } from '../shared/Contracts/UserQueryParameters';
+import { environment } from '../../environments/environment'; 
 @Component({
   selector: 'app-nav',
   standalone: true,
@@ -16,9 +17,10 @@ import { UserQueryParameters } from '../shared/Contracts/UserQueryParameters';
 })
 export class NavComponent implements OnInit {
   user: CurrentUser = {} as CurrentUser;
-  baseUrl: string = 'http://localhost:5043/';
+  baseUrl: string = environment.baseUrl;
   showLoggedInNav: boolean = false;
   currentUserId: string = '';
+  isSearchVisible = false;
   searchTerm = '';
   searchResults: any[] = [];
   searchChanged = new Subject<string>();

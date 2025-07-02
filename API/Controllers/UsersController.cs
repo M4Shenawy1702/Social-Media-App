@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace API.Controllers
 {
     [Route("api/[controller]")]
@@ -9,7 +11,10 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDetailsDto>>> GetAllUsersAsync([FromQuery]UserQueryParameters parameters)
         {
-                var users = await _userService.GetAllUserAsync(parameters);
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+                var users = await _userService.GetAllUserAsync(parameters,currentUserId);
                 return Ok(users);
         } 
         [HttpGet("{id}")]

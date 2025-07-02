@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import * as signalR from "@microsoft/signalr";
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
 interface ChatMessage {
   senderId: string;
   content: string;
@@ -12,12 +14,13 @@ interface ChatMessage {
 })
 export class ChatSignalrService {
   private hubConnection!: signalR.HubConnection;
+  private readonly baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
 
   startConnection(token?: string): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5043/chathub', {
+      .withUrl(`${this.baseUrl}/chathub`, {
         accessTokenFactory: () => {
           if (token) return token;
           const user = localStorage.getItem('user');
@@ -44,7 +47,7 @@ export class ChatSignalrService {
   getMessages(receiverId: string, callback: (msgs: ChatMessage[]) => void): void {
     const token = localStorage.getItem('jwtToken') || '';
 
-    this.http.get<ChatMessage[]>(`http://localhost:5043/api/chat/${receiverId}`, {
+    this.http.get<ChatMessage[]>(`${this.baseUrl}/api/chat/${receiverId}`, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: msgs => callback(msgs),

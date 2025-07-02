@@ -6,7 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserProfile } from '../shared/Contracts/UserProfile'; 
 import { Gender } from '../shared/enums/Gender'; 
 import { editUserProfile } from '../shared/Contracts/editUserProfile';
-
+import { environment } from '../../environments/environment'; 
+import { env } from 'process';
 
 @Component({
   selector: 'app-edit-profile',
@@ -19,7 +20,7 @@ export class EditProfileComponent implements OnInit {
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
 
-  baseUrl = 'http://localhost:5043/';
+  baseUrl = environment.baseUrl;
   userId: string = '';
   
   editUserProfile: editUserProfile = {

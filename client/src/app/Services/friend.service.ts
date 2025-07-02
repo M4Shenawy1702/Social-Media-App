@@ -4,6 +4,8 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { FriendListDetails } from '../shared/Contracts/FreindRequestDetails';
 import { FriendStatus } from "../shared/Contracts/FriendStatus";
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment'; 
+
 
 
 interface FriendRequestResponse {
@@ -16,7 +18,7 @@ interface FriendRequestResponse {
   providedIn: 'root'
 })
 export class FriendService {
-  private readonly baseUrl = 'http://localhost:5043/api';
+  private readonly baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -55,18 +57,18 @@ export class FriendService {
     );
   }
 
-  getFriendList(userId : string): Observable<FriendListDetails[]> {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-      return throwError(() => new Error('Authentication token not found'));
+    getFriendList(userId : string): Observable<FriendListDetails[]> {
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        return throwError(() => new Error('Authentication token not found'));
+      }
+
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      return this.http.get<FriendListDetails[]>(`${this.baseUrl}/api/UserRelationships/get-friends/${userId}`, { headers });
     }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<FriendListDetails[]>(`${this.baseUrl}/UserRelationships/get-friends/${userId}`, { headers });
-  }
 
   removeFriend(friendId: string): Observable<FriendRequestResponse> {
     const token = localStorage.getItem('jwtToken');
@@ -78,7 +80,7 @@ export class FriendService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/UserRelationships/remove-friend/${friendId}`, { headers });
+    return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/api/UserRelationships/remove-friend/${friendId}`, { headers });
   }
   cancelRequest(requestId: string): Observable<FriendRequestResponse> {
     const token = localStorage.getItem('jwtToken');
@@ -90,7 +92,7 @@ export class FriendService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/UserRelationships/cancel-request/${requestId}`, { headers });
+    return this.http.delete<FriendRequestResponse>(`${this.baseUrl}/api/UserRelationships/cancel-request/${requestId}`, { headers });
   }
   getFriendStatus(friendId: string): Observable<FriendStatus> {
     const token = localStorage.getItem('jwtToken');
@@ -102,7 +104,7 @@ export class FriendService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.get<number>(`${this.baseUrl}/UserRelationships/get-friend-status/${friendId}`, { headers })
+    return this.http.get<number>(`${this.baseUrl}/api/UserRelationships/get-friend-status/${friendId}`, { headers })
       .pipe(
         map((statusNumber: number) => {
           if (Object.values(FriendStatus).includes(statusNumber)) {

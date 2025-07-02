@@ -7,7 +7,7 @@ import { AuthServiceService } from '../Services/AuthService/auth-service.service
 import { FriendListDetails } from '../shared/Contracts/FreindRequestDetails';
 import { RouterLink } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-
+import { environment } from '../../environments/environment'; 
 
 @Component({
   selector: 'app-friend-list',
@@ -20,7 +20,7 @@ export class FriendsListComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   friendList: FriendListDetails[] = [];
-  baseUrl = 'http://localhost:5043/';
+  baseUrl = environment.baseUrl;
   currentUserId: string;
   userId: string;
 

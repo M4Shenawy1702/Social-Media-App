@@ -18,7 +18,7 @@ export class PostsSearchComponent implements OnInit {
     data: [],
     count: 0,
     pageIndex: 1,
-    pageSize: 10
+    pageCount: 10
   };
 
   constructor(private route: ActivatedRoute, private postsService: PostsService) { }

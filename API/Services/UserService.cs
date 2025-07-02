@@ -10,22 +10,22 @@ namespace API.Services
     {
         private List<string> _AllowedExtensions = new List<string> { ".jpg", ".png", ".jpeg" };
         private long _MaxAllowedSize = 10485760;
-        public async Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters)
-        {
-            var specs = new GetUserWithAddressSpesification(parameters);
-            var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
+public async Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters, string currentUserId)
+{
+    var specs = new GetUserWithAddressSpesification(parameters, currentUserId);
+    var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
 
-            var users = await userRepo.GetAllAsync(specs);
+    var users = await userRepo.GetAllAsync(specs);
 
-            var data = _mapper.Map<IEnumerable<UserDetailsDto>>(users);
+    var data = _mapper.Map<IEnumerable<UserDetailsDto>>(users);
 
-            var totalCount = await userRepo.CountAsync(new UserCountSpecifications(parameters));
-            var pageCount = (int)Math.Ceiling((double)totalCount / parameters.PageSize);
+    var countSpec = new UserCountSpecifications(parameters, currentUserId);
+    var totalCount = await userRepo.CountAsync(countSpec);
 
-            return new(parameters.PageIndex, pageCount, totalCount, data);
-        }
+    var pageCount = (int)Math.Ceiling((double)totalCount / parameters.PageSize);
 
-
+    return new(parameters.PageIndex, pageCount, totalCount, data);
+}
         public async Task<UserDetailsDto> GetUserProfileAsync(string userId)
         {
             var user = await _userManager.Users

@@ -1,92 +1,77 @@
 import { UserService } from './../Services/user.service';
 import { FriendService } from './../Services/friend.service';
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { UserProfile } from '../shared/Contracts/UserProfile';
 import { FriendStatus } from "../shared/Contracts/FriendStatus";
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 import { UserQueryParameters } from '../shared/Contracts/UserQueryParameters';
+import { CommonModule } from '@angular/common';
+import { Component, NgModule, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { environment } from '../../environments/environment'; 
+import e from 'express';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgbModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {
-
-  title = 'The ChattingApp';
+export class DashboardComponent implements OnInit {
   users: PagenatedResult<UserProfile> = {
     pageIndex: 1,
-    pageSize: 10,
+    pageCount: 10,
     count: 0,
     data: []
   };
   pages: number[] = [];
   isLoading = false;
+  noMoreUsers = false;
   errorMessage = '';
-  baseUrl = 'http://localhost:5043/';
+  baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient, private friendService: FriendService, private AuthServiceService: AuthServiceService, private userService: UserService) { }
+  constructor(
+    private http: HttpClient,
+    private friendService: FriendService,
+    private AuthServiceService: AuthServiceService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.getUsers();
   }
-  get totalPages(): number {
-    return Math.ceil(this.users.count / this.users.pageSize);
-  }
-  goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.users.pageIndex = page;
-    this.getUsers();
-  }
 
-  generatePages(): void {
-    const maxPagesToShow = 5;
-    const currentPage = this.users.pageIndex;
-    const totalPages = this.totalPages;
-
-    let start = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let end = Math.min(totalPages, start + maxPagesToShow - 1);
-
-    if (end - start < maxPagesToShow - 1) {
-      start = Math.max(1, end - maxPagesToShow + 1);
-    }
-
-    this.pages = [];
-    for (let i = start; i <= end; i++) {
-      this.pages.push(i);
-    }
-  }
   getUsers(): void {
     this.isLoading = true;
 
     const queryParams: UserQueryParameters = {
       pageIndex: this.users.pageIndex,
-      pageSize: this.users.pageSize,
+      pageSize: this.users.pageCount,
       searchByName: undefined,
     };
+
+    console.log('Sending queryParams:', queryParams);
 
     this.userService.getUsers(queryParams).subscribe({
       next: (response) => {
         console.log('Data received:', response);
 
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        const currentUserId = currentUser?.userId;
+        const newUsers = response.data.filter(
+          user => !this.users.data.some(existing => existing.id === user.id)
+        );
 
-        this.users.data = response.data.filter(user => user.id !== currentUserId);
+        this.users.data = [...this.users.data, ...newUsers];
         this.users.count = response.count;
-        this.users.pageIndex = response.pageIndex;
-        this.users.pageSize = response.pageSize;
+        this.users.pageCount = response.pageCount;
+
+        if (this.users.pageIndex >= this.users.pageCount) {
+          this.noMoreUsers = true;
+        }
 
         this.isLoading = false;
-
-
       },
       error: (err) => {
         this.isLoading = false;
@@ -94,5 +79,20 @@ export class DashboardComponent {
         console.error(err);
       }
     });
+  }
+
+  LoadMore(): void {
+    if (this.users.pageIndex >= this.users.pageCount) {
+      console.log('No more pages to load');
+      this.noMoreUsers = true;
+      return;
+    }
+
+    this.users.pageIndex++;
+    this.getUsers();
+  }
+
+  trackByUserId(index: number, user: UserProfile): string {
+    return user.id;
   }
 }

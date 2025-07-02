@@ -101,9 +101,12 @@
 
   <!-- Posts List -->
   <!-- Posts List with Infinite Scroll -->
-  <!-- <div class="mt-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
+  <div class="mt-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
     (scrolled)="onScrollDown()">
     <app-posts [posts]="posts?.data"></app-posts>
-  </div> -->
+  </div>
+  <div *ngIf="!isLoading && posts.data.length >= posts.count" class="text-center text-muted mt-3">
+    No more posts to load.
+  </div>
 
 </div>

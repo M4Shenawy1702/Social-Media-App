@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { Post } from '../shared/Contracts/Post';
 import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
-import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment'; 
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostsService {
-  private baseUrl = 'http://localhost:5043/';
+  private readonly baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -37,7 +38,7 @@ export class PostsService {
     if (params.userId) {
       queryParams = queryParams.set('userId', params.userId);
     }
-    return this.http.get<PagenatedResult<Post>>(`${this.baseUrl}api/Posts`, {
+    return this.http.get<PagenatedResult<Post>>(`${this.baseUrl}/api/Posts`, {
       headers,
       params: queryParams
     });
@@ -46,7 +47,7 @@ export class PostsService {
     const token = localStorage.getItem('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<Post[]>(`${this.baseUrl}api/Posts/liked`, {
+    return this.http.get<Post[]>(`${this.baseUrl}/api/Posts/liked`, {
       headers,
     });
   }
@@ -55,27 +56,27 @@ export class PostsService {
     const token = localStorage.getItem('jwtToken') || '';
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.post(`${this.baseUrl}api/Likes/${postId}`, {}, { headers, responseType: 'text' });
+    return this.http.post(`${this.baseUrl}/api/Likes/${postId}`, {}, { headers, responseType: 'text' });
   }
 
   deletePost(postId: number): Observable<any> {
     const token = localStorage.getItem('jwtToken') || '';
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.delete(`${this.baseUrl}api/Posts/${postId}`, { headers, responseType: 'text' });
+    return this.http.delete(`${this.baseUrl}/api/Posts/${postId}`, { headers, responseType: 'text' });
   }
 
   getPost(postId: number): Observable<Post> {
     const token = localStorage.getItem('jwtToken') || '';
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<Post>(`${this.baseUrl}api/Posts/${postId}`, { headers });
+    return this.http.get<Post>(`${this.baseUrl}/api/Posts/${postId}`, { headers });
   }
   updatePost(postId: number, formData: FormData): Observable<any> {
     const token = localStorage.getItem('jwtToken') || '';
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.put(`${this.baseUrl}api/Posts/${postId}`, formData, { headers });
+    return this.http.put(`${this.baseUrl}/api/Posts/${postId}`, formData, { headers });
   }
 
 }

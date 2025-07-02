@@ -12,6 +12,7 @@ import { PostQueryParameters } from '../shared/Contracts/PostQueryParameters';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { PostsComponent } from "../posts/posts.component";
 import { FriendStatus } from "../shared/Contracts/FriendStatus";
+import { environment } from '../../environments/environment'; 
 
 @Component({
   selector: 'app-profile',
@@ -22,7 +23,7 @@ import { FriendStatus } from "../shared/Contracts/FriendStatus";
 })
 export class ProfileComponent implements OnInit {
   FriendStatus = FriendStatus; 
-  baseUrl = 'http://localhost:5043/';
+  baseUrl = environment.baseUrl;
   userId: string | null = null;
   CurrentUserId: string | null = null;
   userProfile: UserProfile | null = null;
@@ -33,7 +34,7 @@ export class ProfileComponent implements OnInit {
 
   posts: PagenatedResult<Post> = {
     pageIndex: 1,
-    pageSize: 10,
+    pageCount: 10,
     count: 0,
     data: []
   };
@@ -66,7 +67,7 @@ export class ProfileComponent implements OnInit {
     const token = localStorage.getItem('jwtToken');
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    this.http.get<UserProfile>(`${this.baseUrl}api/users/${userId}`, { headers })
+    this.http.get<UserProfile>(`${this.baseUrl}/api/users/${userId}`, { headers })
       .subscribe({
         next: (res) => this.userProfile = res,
         error: (err) => {
@@ -81,7 +82,7 @@ export class ProfileComponent implements OnInit {
 
     const params: PostQueryParameters = {
       pageIndex: this.posts.pageIndex,
-      pageSize: this.posts.pageSize,
+      pageSize: this.posts.pageCount,
       userId: userId
     };
 

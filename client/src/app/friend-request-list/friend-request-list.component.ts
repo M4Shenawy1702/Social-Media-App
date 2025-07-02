@@ -27,16 +27,14 @@ export class FriendRequestListComponent implements OnInit {
   }
   getallfriendrequests(): void {
     this.isLoading = true;
-    const userId: string = this._authService.getCurrentUserId();
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const currentUserId = currentUser?.userId;
+    const currentUserId: string = this._authService.getCurrentUserId();
     const token = localStorage.getItem('jwtToken');
 
     const headers = token
       ? { Authorization: `Bearer ${token}` }
       : {};
 
-    this.http.get<FriendReceivedListDetails[]>(`http://localhost:5043/api/UserRelationships/get-received-requests/${userId}`, { headers }).subscribe({
+    this.http.get<FriendReceivedListDetails[]>(`http://localhost:5043/api/UserRelationships/get-received-requests/`, { headers }).subscribe({
       next: (response) => {
         console.log('Data received:', response);
         this.friendRequests = response.filter(user => user.id !== currentUserId);

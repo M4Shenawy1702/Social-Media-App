@@ -1,6 +1,5 @@
-import { PostComment } from './../shared/Contracts/PostComment';
+import { PostComment } from '../shared/Contracts/PostComment';
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Post } from '../shared/Contracts/Post';
 import { PostsService } from '../Services/posts.service';
@@ -8,22 +7,25 @@ import { CommentsService } from '../Services/comments.service';
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 import Swal from 'sweetalert2';
 import { Router, RouterLink } from '@angular/router';
-declare var bootstrap: any;
+import { CommonModule } from '@angular/common';
+import { environment } from '../../environments/environment'; 
 
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, CommonModule],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.scss']
 })
 export class PostsComponent {
-
   @Input() posts: Post[] = [];
-  selectedPost: Post = null
-  selectedComment: PostComment = null
-  baseUrl = 'http://localhost:5043/';
+  selectedPost: Post | null = null;
+  selectedComment: PostComment | null = null;
+  editingCommentId: number | null = null;
+  editedCommentContent: string = '';
+  baseUrl = environment.baseUrl;
 
   commentContents: { [postId: number]: string } = {};
   CurrentUserId: string | null;
@@ -63,7 +65,7 @@ export class PostsComponent {
         const post = this.posts.find(p => p.id === postId);
         if (post) post.comments.push(newComment);
         this.commentContents[postId] = '';
-        Swal.fire('Success!', 'Comment added successfully.', 'success');
+        
       },
       error: (error) => {
         console.error('Error adding comment:', error);
@@ -161,9 +163,16 @@ export class PostsComponent {
     });
   }
 
-  onEditComment(comment: PostComment) {
+  startEditComment(comment: PostComment) {
+    this.editingCommentId = comment.id;
+    this.editedCommentContent = comment.content;
+  }
+
+  submitEditedComment(comment: PostComment) {
+    if (!this.editedCommentContent.trim()) return;
+
     const formData = new FormData();
-    formData.append('Content', comment.content);
+    formData.append('Content', this.editedCommentContent);
     formData.append('AuthorId', comment.authorId.toString());
     formData.append('PostId', comment.postId.toString());
 
@@ -171,16 +180,15 @@ export class PostsComponent {
       next: () => {
         const post = this.posts.find(p => p.id === comment.postId);
         if (post) {
-          post.comments = post.comments.map(c => c.id === comment.id ? comment : c);
+          const commentIndex = post.comments.findIndex(c => c.id === comment.id);
+          if (commentIndex !== -1) {
+            post.comments[commentIndex].content = this.editedCommentContent;
+          }
         }
 
-        const modalElement = document.getElementById('editCommentModal');
-        if (modalElement) {
-          const modal = bootstrap.Modal.getInstance(modalElement);
-          modal?.hide();
-        }
-
-        Swal.fire('Updated!', 'Comment updated successfully.', 'success');
+        this.editingCommentId = null;
+        this.editedCommentContent = '';
+       
       },
       error: (error) => {
         console.error('Error updating comment:', error);
@@ -188,6 +196,12 @@ export class PostsComponent {
       }
     });
   }
+
+  cancelEditComment() {
+    this.editingCommentId = null;
+    this.editedCommentContent = '';
+  }
+
 
   isVideo(url: string): boolean {
     return /\.(mp4|webm|ogg)$/i.test(url);

@@ -1,32 +1,33 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment'; 
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServiceService {
   private isAuthenticated = false;
-  private user: any = null; 
+  private user: any = null;
 
-  baseurl = 'http://localhost:5043/api/Authentication/';
+  private baseUrl = environment.baseUrl; 
 
   constructor(private http: HttpClient, private router: Router) {
     this.isAuthenticated = localStorage.getItem('isLoggedIn') === 'true';
     if (this.isAuthenticated) {
-      this.loadUserData(); 
+      this.loadUserData();
     }
   }
 
   login(loginModel: { Email: string; Password: string }) {
-    return this.http.get(`${this.baseurl}login?Email=${loginModel.Email}&Password=${loginModel.Password}`);
+    return this.http.get(`${this.baseUrl}login?Email=${loginModel.Email}&Password=${loginModel.Password}`);
   }
-  
 
   logout(): void {
     this.isAuthenticated = false;
     localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('user'); 
+    localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
 
@@ -44,16 +45,16 @@ export class AuthServiceService {
   getCurrentUserId(): string {
     const userJson = localStorage.getItem('user');
     if (!userJson) return '';
-  
+
     try {
       const user = JSON.parse(userJson);
-      return user?.userId || ''; 
+      return user?.userId || '';
     } catch {
       return '';
     }
   }
 
   registerWithFormData(formData: FormData) {
-    return this.http.post(`${this.baseurl}register`, formData);
+    return this.http.post(`${this.baseUrl}/api/Authentication/register`, formData);
   }
 }

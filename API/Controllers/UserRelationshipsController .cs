@@ -66,18 +66,24 @@ namespace API.Controllers
         }
 
         // Get Received Friend Requests
-        [HttpGet("get-received-requests/{userId}")]
-        public async Task<ActionResult<IEnumerable<FriendRequestDetailsDto>>> GetReceivedRequests(string userId)
+        [HttpGet("get-received-requests")]
+        public async Task<ActionResult<IEnumerable<FriendRequestDetailsDto>>> GetReceivedRequests()
         {
-            var receivedRequests = await _userRelationshipService.GetReceivedRequestsAsync(userId);
+             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var receivedRequests = await _userRelationshipService.GetReceivedRequestsAsync(currentUserId!);
             return Ok(receivedRequests);
         }
 
         // Get Sent Friend Requests
-        [HttpGet("get-sent-requests/{userId}")]
-        public async Task<IActionResult> GetSentRequests(string userId)
+        [HttpGet("get-sent-requests")]
+        public async Task<IActionResult> GetSentRequests()
         {
-            var sentRequests = await _userRelationshipService.GetSentRequestsAsync(userId);
+                         var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                return Unauthorized("User ID not found in token.");
+            var sentRequests = await _userRelationshipService.GetSentRequestsAsync(currentUserId);
             return Ok(sentRequests);
         }
         [HttpGet("get-friend-status/{FriendId}")]

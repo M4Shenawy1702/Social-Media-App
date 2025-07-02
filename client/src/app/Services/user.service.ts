@@ -4,12 +4,13 @@ import { UserProfile } from '../shared/Contracts/UserProfile';
 import { Observable } from 'rxjs';
 import { PagenatedResult } from '../shared/Contracts/PagenatedResult';
 import { UserQueryParameters } from '../shared/Contracts/UserQueryParameters';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = 'http://localhost:5043/';
+  private readonly baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -17,25 +18,21 @@ export class UserService {
     const token = localStorage.getItem('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<UserProfile>(`${this.baseUrl}api/Users/${userId}`, { headers });
+    return this.http.get<UserProfile>(`${this.baseUrl}/api/Users/${userId}`, { headers });
   }
   getUsers(params: UserQueryParameters): Observable<PagenatedResult<UserProfile>> {
     const token = localStorage.getItem('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    let httpParams = new HttpParams()
-      .set('PageNumber', params.pageIndex.toString())
-      .set('PageSize', params.pageSize.toString());
+let httpParams = new HttpParams()
+  .set('pageIndex', params.pageIndex.toString())
+  .set('pageSize', params.pageSize.toString());
 
     if (params.searchByName) {
       httpParams = httpParams.set('SearchByName', params.searchByName);
     }
 
-    if (params.userId) {
-      httpParams = httpParams.set('UserId', params.userId);
-    }
-
-    return this.http.get<PagenatedResult<UserProfile>>(`${this.baseUrl}api/Users`, {
+    return this.http.get<PagenatedResult<UserProfile>>(`${this.baseUrl}/api/Users`, {
       headers,
       params: httpParams
     });

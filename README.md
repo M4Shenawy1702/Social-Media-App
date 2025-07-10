@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Link Up 👥💬
 
 **Link Up** is a Fullstack Social Media Web Application that allows users to connect, post updates, and chat in real-time.

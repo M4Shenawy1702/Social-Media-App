@@ -82,7 +82,7 @@ ng serve
 \`\`\`
 
 > The frontend will run at \`http://localhost:4200\`  
-> The backend API will run at \`http://localhost:5000\` or \`https://localhost:5001\`
+> The backend API will run at \`http://localhost:5043\`
 
 ---
 
@@ -112,7 +112,7 @@ If you find any bugs or have ideas for new features, feel free to open an issue 
 ## 📧 Contact
 
 For questions or collaboration, feel free to reach out:  
-💼 [LinkedIn](https://www.linkedin.com/in/your-profile)  
+💼 [LinkedIn](https://www.linkedin.com/in/m4elshenawy/)  
 📩 Or message me directly via GitHub.
 
 ---

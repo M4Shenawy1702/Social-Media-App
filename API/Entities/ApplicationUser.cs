@@ -8,7 +8,7 @@ namespace API.Entities
         public string? Bio { get; set; }
         public string? ProfilePictureUrl { get; set; }
         public string? CoverPhotoUrl { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
         public Gender Gender { get; set; }
 
         // Social Media Specific

@@ -65,7 +65,7 @@ export class EditProfileComponent implements OnInit {
       'Authorization': `Bearer ${token}`
     };
 
-    this.http.get<UserProfile>(`${this.baseUrl}api/users/${this.userId}`, { headers }).subscribe({
+    this.http.get<UserProfile>(`${this.baseUrl}/api/users/${this.userId}`, { headers }).subscribe({
       next: (profile) => {
         this.editUserProfile = profile;
       },
@@ -104,14 +104,14 @@ export class EditProfileComponent implements OnInit {
     formData.append('Country', model.userAddress.country);
   
     if (this.profilePictureFile) {
-      formData.append('ProfilePicture', this.profilePictureFile);
+      formData.append('ProfilePicture', this.profilePictureFile ?? null);
     }
   
     if (this.coverPhotoFile) {
-      formData.append('CoverPhoto', this.coverPhotoFile); 
+      formData.append('CoverPhoto', this.coverPhotoFile ?? null); 
     }
   
-    this.http.put(`${this.baseUrl}api/users/update/${this.userId}`, formData, { headers })
+    this.http.put(`${this.baseUrl}/api/users/update/${this.userId}`, formData, { headers })
       .subscribe({
         next: (response) => {
           this.router.navigate(['/main-layout/profile', this.userId]);

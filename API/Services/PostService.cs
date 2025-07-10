@@ -68,7 +68,9 @@ namespace API.Services
             var likedPostIds = await likesRepo.GetAllAsync(new GetLikesByPostIdsByUserIdSpecification(currentUserId, postIds));
             var likedPostIdSet = likedPostIds.Select(l => l.PostId).ToHashSet();
 
-            var data = _mapper.Map<IEnumerable<PostDto>>(posts);
+            var orderedPosts = posts.OrderByDescending(p => p.LastUpdatedAt).ToList();
+
+            var data = _mapper.Map<IEnumerable<PostDto>>(orderedPosts);
 
             foreach (var postDto in data)
             {

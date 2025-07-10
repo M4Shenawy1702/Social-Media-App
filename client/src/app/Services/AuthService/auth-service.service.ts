@@ -21,7 +21,7 @@ export class AuthServiceService {
   }
 
   login(loginModel: { Email: string; Password: string }) {
-    return this.http.get(`${this.baseUrl}login?Email=${loginModel.Email}&Password=${loginModel.Password}`);
+    return this.http.get(`${this.baseUrl}/api/Authentication/login?Email=${loginModel.Email}&Password=${loginModel.Password}`);
   }
 
   logout(): void {

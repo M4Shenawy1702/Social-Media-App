@@ -7,14 +7,17 @@ import {
   AfterViewChecked
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ChatSignalrService } from '../Services/chat-signal-r.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../environments/environment';
+import { ChatSignalrService } from '../Services/chat-signal-r.service';
+import { UserService } from '../Services/user.service';
+
 import { ChatMessage } from '../shared/Contracts/ChatMessage';
 import { UserProfile } from '../shared/Contracts/UserProfile';
-import { UserService } from '../Services/user.service';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment'; 
+import Swal from 'sweetalert2';
 
 interface ChatMessageWithUI extends ChatMessage {
   showMenu?: boolean;
@@ -41,7 +44,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(
     private chatService: ChatSignalrService,
     private route: ActivatedRoute,
-    private userService: UserService
+    private userService: UserService,
   ) { }
 
   ngOnInit(): void {
@@ -70,15 +73,28 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.scrollToBottom();
       });
 
-      this.chatService.onMessageReceived((senderId, message) => {
-        this.messages.push({
-          senderId,
-          content: message,
-          timestamp: new Date().toISOString()
-        });
+      this.chatService.onMessageReceived((msg) => {
+        const newMessage: ChatMessageWithUI = {
+          ...msg,
+          timestamp: msg.timestamp || new Date().toISOString()
+        };
+
+        this.messages.push(newMessage);
         this.scrollToBottom();
       });
-    })
+
+      this.chatService.onMessageUpdated((updatedMessage) => {
+        const index = this.messages.findIndex(m => m.id === updatedMessage.id);
+        if (index > -1) {
+          this.messages[index].content = updatedMessage.content;
+
+        }
+      });
+
+      this.chatService.onMessageDeleted(({ messageId }) => {
+        this.messages = this.messages.filter(m => m.id !== messageId);
+      });
+    });
   }
 
   ngAfterViewChecked(): void {
@@ -88,23 +104,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   sendMessage(): void {
     const trimmedMessage = this.newMessage.trim();
     if (!trimmedMessage || !this.receiverId) return;
-
-    if (this.editMessage) {
-      // Future extension: call API to update message
-      this.editMessage.content = trimmedMessage;
-      this.editMessage = null;
-    } else {
+    else {
       this.chatService.sendMessage(this.receiverId, trimmedMessage);
-      this.messages.push({
-        senderId: this.currentUserId,
-        content: trimmedMessage,
-        timestamp: new Date().toISOString()
-      });
     }
-
     this.newMessage = '';
-    this.scrollToBottom();
   }
+
 
   toggleMenu(msg: ChatMessageWithUI): void {
     this.messages.forEach(m => {
@@ -118,10 +123,44 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.newMessage = msg.content || '';
     msg.showMenu = false;
   }
+  oneditMessage(): void {
+    if (!this.editMessage) return;
 
-  deleteMessage(msg: ChatMessageWithUI): void {
-    this.messages = this.messages.filter(m => m !== msg);
-    // Optional: call API to delete the message from backend
+    const trimmedMessage = this.newMessage.trim();
+    if (!trimmedMessage) return;
+
+    this.chatService.updateMessage(this.editMessage.id, trimmedMessage);
+
+    const index = this.messages.findIndex(m => m.id === this.editMessage?.id);
+    if (index > -1) {
+      this.messages[index].content = trimmedMessage;
+    }
+
+    this.editMessage = null;
+    this.newMessage = '';
+  }
+  cancelEdit(): void {
+    this.editMessage = null;
+    this.newMessage = '';
+  }
+  deleteMessage(msgId: number): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this message!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.messages = this.messages.filter(m => m.id !== msgId);
+
+        if (msgId != null) {
+          this.chatService.deleteMessage(msgId);
+        }
+      }
+    });
   }
 
   private scrollToBottom(): void {

@@ -4,9 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 interface ChatMessage {
+  id: number;
   senderId: string;
+  receiverId: string;
   content: string;
   timestamp?: string;
+  chatId?: number;
 }
 
 @Injectable({
@@ -16,7 +19,7 @@ export class ChatSignalrService {
   private hubConnection!: signalR.HubConnection;
   private readonly baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   startConnection(token?: string): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -25,14 +28,15 @@ export class ChatSignalrService {
           if (token) return token;
           const user = localStorage.getItem('user');
           return user ? JSON.parse(user).token : null;
-        }
+        },
+        transport: signalR.HttpTransportType.WebSockets 
       })
       .withAutomaticReconnect()
       .build();
 
     this.hubConnection.start()
-      .then(() => console.log('Connected!'))
-      .catch(err => console.error('Connection error:', err));
+      .then(() => console.log('SignalR Connected!'))
+      .catch(err => console.error('SignalR Connection Error:', err));
   }
 
   sendMessage(receiverId: string, message: string): void {
@@ -40,8 +44,24 @@ export class ChatSignalrService {
       .catch(err => console.error('SendMessage error:', err));
   }
 
-  onMessageReceived(callback: (senderId: string, message: string) => void): void {
-    this.hubConnection.on('ReceiveMessage', callback);
+  onMessageReceived(callback: (message: ChatMessage) => void): void {
+    this.hubConnection.on('ReceiveMessage', (msg: ChatMessage) => {
+      callback(msg);
+    });
+  }
+
+  onMessageUpdated(callback: (updatedMessage: ChatMessage) => void): void {
+    this.hubConnection.on('MessageUpdated', (msg: ChatMessage) => {
+      callback(msg);
+    });
+  }
+
+  onMessageDeleted(callback: (deletedMessage: { messageId: number }) => void): void {
+    this.hubConnection.on('MessageDeleted', callback);
+  }
+
+  onChatDeleted(callback: (chatId: number) => void): void {
+    this.hubConnection.on('ChatDeleted', callback);
   }
 
   getMessages(receiverId: string, callback: (msgs: ChatMessage[]) => void): void {
@@ -52,6 +72,36 @@ export class ChatSignalrService {
     }).subscribe({
       next: msgs => callback(msgs),
       error: err => console.error('Failed to load messages', err)
+    });
+  }
+
+  deleteMessage(messageId: number): void {
+    const token = localStorage.getItem('jwtToken') || '';
+    this.http.delete(`${this.baseUrl}/api/chat/${messageId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: () => console.log('Message deleted'),
+      error: err => console.error('Delete message error:', err)
+    });
+  }
+
+  updateMessage(messageId: number, content: string): void {
+    const token = localStorage.getItem('jwtToken') || '';
+    this.http.put(`${this.baseUrl}/api/chat/${messageId}`, { content }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: () => console.log('Message updated'),
+      error: err => console.error('Update message error:', err)
+    });
+  }
+
+  deleteChat(chatId: number): void {
+    const token = localStorage.getItem('jwtToken') || '';
+    this.http.delete(`${this.baseUrl}/api/chat/by-chat/${chatId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: () => console.log('Chat deleted'),
+      error: err => console.error('Delete chat error:', err)
     });
   }
 

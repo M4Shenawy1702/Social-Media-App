@@ -39,7 +39,7 @@ export class FriendService {
     });
 
     return this.http.post<FriendRequestResponse>(
-      `${this.baseUrl}/UserRelationships/send-request/${initiatorId}/${receiverId}`,
+      `${this.baseUrl}/api/UserRelationships/send-request/${initiatorId}/${receiverId}`,
       {}, // Empty body
       { headers }
     ).pipe(

@@ -21,7 +21,7 @@ export class PostsService {
       Authorization: `Bearer ${token}`
     });
 
-    return this.http.post(`${this.baseUrl}api/Posts`, formData, { headers });
+    return this.http.post(`${this.baseUrl}/api/Posts`, formData, { headers });
   }
 
   getAllPosts(params: PostQueryParameters): Observable<PagenatedResult<Post>> {

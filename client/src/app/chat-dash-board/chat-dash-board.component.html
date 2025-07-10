@@ -1,7 +1,8 @@
 <div class="container-fluid">
-    <div class="row">
+    <div class="row flex-column flex-md-row" style="height: 100vh;">
+
         <!-- Friends List -->
-        <div class="col-4 border-end bg-light" style="height: 100vh; overflow-y: auto;">
+        <div class="col-12 col-md-4 border-end bg-light" style="overflow-y: auto;">
             <h5 class="p-3 fw-bold">Friends</h5>
             <ul class="list-group">
                 <li *ngFor="let friend of friends" [routerLink]="['chat', friend.friendId]"
@@ -15,8 +16,9 @@
         </div>
 
         <!-- Chat Window -->
-        <div class="col-8" style="height: 100vh; overflow-y: auto;">
+        <div class="col-12 col-md-8" style="overflow-y: auto;">
             <router-outlet></router-outlet>
         </div>
+
     </div>
 </div>

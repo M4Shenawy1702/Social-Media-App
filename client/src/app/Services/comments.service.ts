@@ -28,7 +28,7 @@ export class CommentsService {
     const token = localStorage.getItem('jwtToken') || '';
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.put<PostComment>(`${this.baseUrl}/Comments/${commentId}`, formData, { headers });
+    return this.http.put<PostComment>(`${this.baseUrl}/api/Comments/${commentId}`, formData, { headers });
   }
 
 }

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient} from '@angular/common/http';
 import { AuthServiceService } from '../Services/AuthService/auth-service.service';
 import { RouterLink } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-friend-request-list',
@@ -16,6 +17,7 @@ export class FriendSendListComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   friendSentRequests: any[] = [];
+  baseUrl = environment.baseUrl
 
   constructor(private _authService: AuthServiceService, private http: HttpClient , private friendService : FriendService) {}
 
@@ -31,7 +33,7 @@ getallsentrequests(): void {
     ? { Authorization: `Bearer ${token}` }
     : {};
 
-  this.http.get<any[]>(`http://localhost:5043/api/UserRelationships/get-sent-requests`, { headers }).subscribe({
+  this.http.get<any[]>(`${this.baseUrl}/api/UserRelationships/get-sent-requests`, { headers }).subscribe({
     next: (response) => {
       console.log('Data received:', response);
       this.friendSentRequests = response.filter(user => user.id !== currentUserId);

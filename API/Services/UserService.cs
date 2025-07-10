@@ -8,24 +8,24 @@ namespace API.Services
     public class UserService(UserManager<ApplicationUser> _userManager, IMapper _mapper, IUnitOfWork _unitOfWork)
     : IUserService
     {
-        private List<string> _AllowedExtensions = new List<string> { ".jpg", ".png", ".jpeg" };
+        private List<string> _AllowedExtensions = new List<string> { ".jpg", ".png", ".jpeg", ".webp" };
         private long _MaxAllowedSize = 10485760;
-public async Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters, string currentUserId)
-{
-    var specs = new GetUserWithAddressSpesification(parameters, currentUserId);
-    var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
+        public async Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryParameters parameters, string currentUserId)
+        {
+            var specs = new GetUserWithAddressSpesification(parameters, currentUserId);
+            var userRepo = _unitOfWork.GetRepository<ApplicationUser, string>();
 
-    var users = await userRepo.GetAllAsync(specs);
+            var users = await userRepo.GetAllAsync(specs);
 
-    var data = _mapper.Map<IEnumerable<UserDetailsDto>>(users);
+            var data = _mapper.Map<IEnumerable<UserDetailsDto>>(users);
 
-    var countSpec = new UserCountSpecifications(parameters, currentUserId);
-    var totalCount = await userRepo.CountAsync(countSpec);
+            var countSpec = new UserCountSpecifications(parameters, currentUserId);
+            var totalCount = await userRepo.CountAsync(countSpec);
 
-    var pageCount = (int)Math.Ceiling((double)totalCount / parameters.PageSize);
+            var pageCount = (int)Math.Ceiling((double)totalCount / parameters.PageSize);
 
-    return new(parameters.PageIndex, pageCount, totalCount, data);
-}
+            return new(parameters.PageIndex, pageCount, totalCount, data);
+        }
         public async Task<UserDetailsDto> GetUserProfileAsync(string userId)
         {
             var user = await _userManager.Users
@@ -56,19 +56,20 @@ public async Task<PaginatedResult<UserDetailsDto>> GetAllUserAsync(UserQueryPara
             if (updateDto.ProfilePicture != null)
             {
                 profilePicturePath = await SaveImageAsync(updateDto.ProfilePicture, "profile", user.ProfilePictureUrl);
+                user.ProfilePictureUrl = profilePicturePath!;
             }
 
             if (updateDto.CoverPhoto != null)
             {
                 coverPhotoPath = await SaveImageAsync(updateDto.CoverPhoto, "cover", user.CoverPhotoUrl);
+                user.CoverPhotoUrl = coverPhotoPath!;
+
             }
 
             user.Email = updateDto.Email.Trim();
             user.UserName = updateDto.UserName.Trim();
             user.DisplayName = updateDto.DisplayName?.Trim() ?? updateDto.UserName.Trim();
             user.PhoneNumber = updateDto.PhoneNumber?.Trim();
-            user.ProfilePictureUrl = profilePicturePath!;
-            user.CoverPhotoUrl = coverPhotoPath!;
             user.Gender = updateDto.Gender;
             user.Bio = updateDto.Bio!;
             user.DateOfBirth = updateDto.DateOfBirth;

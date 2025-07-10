@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Shared.Dtos;
 using API.Shared.Dtos.CommentDtos;
+using API.Shared.Dtos.MessageDots;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace API.Services
@@ -12,7 +13,7 @@ namespace API.Services
     : IMessageService
     {
 
-        public async Task SaveMessageAsync(MessageDto dto)
+        public async Task<MessageDto> SaveMessageAsync(MessageDto dto)
         {
             var chatRepo = _unitOFWork.GetRepository<Chat, int>();
             var messageRepo = _unitOFWork.GetRepository<Message, int>();
@@ -39,6 +40,8 @@ namespace API.Services
             messageRepo.Add(message);
 
             await _unitOFWork.SaveChangesAsync();
+
+            return _mapper.Map<MessageDto>(message);
         }
 
         public async Task<IEnumerable<MessageDetailsDto>> GetMessagesAsync(string user1, string user2)
@@ -48,33 +51,50 @@ namespace API.Services
             var chat = await chatRepo.GetAsync(new GetChatSpecification(user1, user2));
 
             if (chat == null || chat.Messages == null)
-                return Enumerable.Empty<MessageDetailsDto>();
+                throw new ChatNotFoundException();
 
             var orderedMessages = chat.Messages.OrderBy(m => m.Timestamp).ToList();
             return _mapper.Map<IEnumerable<MessageDetailsDto>>(orderedMessages);
         }
-        public async Task<bool> DeleteMessage(int messageId, string userId)
+        public async Task<MessageDto> DeleteMessageAsync(int messageId, string userId)
         {
             var messageRepo = _unitOFWork.GetRepository<Message, int>();
             var message = await messageRepo.GetAsync(new GetMessageSpecification(messageId));
-            if (message == null)
-                return false;
-            if (message.SenderId != userId)
-                return false;
+
+            if (message == null || message.SenderId != userId)
+                throw new MessageNotFoundException();
+
+            var dto = _mapper.Map<MessageDto>(message);
+
             messageRepo.Delete(message);
             await _unitOFWork.SaveChangesAsync();
-            return true;
+
+            return dto;
         }
-        public async Task<CommentDto> UpdateMessage(int messageId, string content, string userId)
+
+        public async Task<MessageDto> UpdateMessageAsync(int messageId, string content, string currentUserId)
         {
             var messageRepo = _unitOFWork.GetRepository<Message, int>();
             var message = await messageRepo.GetAsync(new GetMessageSpecification(messageId));
-            if (message == null || message.SenderId != userId)
+            if (message == null || message.SenderId != currentUserId)
                 throw new MessageNotFoundException();
             message.Content = content;
             await _unitOFWork.SaveChangesAsync();
-            return _mapper.Map<CommentDto>(message);
+            return _mapper.Map<MessageDto>(message);
         }
-    }
 
+        public async Task<bool> DeleteChatAsync(int chatId)
+        {
+            var chatRepo = _unitOFWork.GetRepository<Chat, int>();
+            var chat = await chatRepo.GetAsync(new GetChatSpecification(chatId));
+
+            if (chat == null)
+                throw new ChatNotFoundException();
+            chatRepo.Delete(chat);
+            await _unitOFWork.SaveChangesAsync();
+            return true;
+
+        }
+
+    }
 }

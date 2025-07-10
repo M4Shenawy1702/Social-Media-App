@@ -113,28 +113,28 @@ export class PostsComponent {
       modal.show();
     }
   }
-  onEditPost(post: Post) {
-    const formData = new FormData();
-    formData.append('Content', post.content);
-    this.postService.updatePost(post.id, formData).subscribe({
-      next: () => {
-        const index = this.posts.findIndex(p => p.id === post.id);
-        if (index !== -1) this.posts[index] = post;
+    onEditPost(post: Post) {
+      const formData = new FormData();
+      formData.append('Content', post.content);
+      this.postService.updatePost(post.id, formData).subscribe({
+        next: () => {
+          const index = this.posts.findIndex(p => p.id === post.id);
+          if (index !== -1) this.posts[index] = post;
 
-        const modalElement = document.getElementById('editPostModal');
-        if (modalElement) {
-          const modal = bootstrap.Modal.getInstance(modalElement);
-          modal?.hide();
+          const modalElement = document.getElementById('editPostModal');
+          if (modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal?.hide();
+          }
+
+          Swal.fire('Success!', 'Post updated successfully.', 'success');
+        },
+        error: (error) => {
+          console.error('Error updating post:', error);
+          Swal.fire('Error', 'Failed to update post.', 'error');
         }
-
-        Swal.fire('Success!', 'Post updated successfully.', 'success');
-      },
-      error: (error) => {
-        console.error('Error updating post:', error);
-        Swal.fire('Error', 'Failed to update post.', 'error');
-      }
-    });
-  }
+      });
+    }
 
   onDeleteComment(commentId: number, postId: number) {
     Swal.fire({

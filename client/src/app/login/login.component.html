@@ -1,169 +1,229 @@
-<!-- Enhanced App Header -->
-<header class="app-header text-center py-2 mb-2">
-  <div class="container">
-    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 px-2 py-2 rounded-pill">
-      <i class="bi bi-chat-dots-fill text-primary me-2" style="font-size: 1.75rem;"></i>
-      <h1 class="app-title m-0 text-primary">
-        Chatting<span class="fw-bold">App</span>
-      </h1>
-    </div>
-    <p class="tagline text-muted mt-3 mb-0">Connect. Chat. Share.</p>
-  </div>
-</header>
-
-<!-- Login Form -->
-@if (isloginview) {
-  <div class="container d-flex justify-content-center align-items-center mt-4">
-    <div class="card p- border-0 shadow-lg" style="width: 100%; max-width: 500px;">
-      <div class="card-header bg-white border-0 text-center py-3">
-        <h3 class="m-0 text-primary">Welcome Back</h3>
-        <p class="text-muted mb-0">Sign in to continue</p>
+<div class="bg-image">
+  <!-- Enhanced App Header -->
+  <header class="app-header text-center py-2 mb-4 ">
+    <div class="container">
+      <div
+        class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 px-2 py-2 rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="لb"
+          class="bi bi-facebook rounded-circle me-2" viewBox="0 0 16 16">
+          <path
+            d="M8.94 6.02H7.29v1.438h1.184v1.13H7.29V12H6.032V8.59H4.878V7.46h1.154V6.55c0-1.093.687-1.68 1.62-1.68h1.187v1.15z" />
+        </svg>
+        <h1 class="app-title m-0 text-primary">
+          Link<span class="fw-bold">Up</span>
+        </h1>
       </div>
-  
-      <div class="card-body">
-        <form #form="ngForm" (ngSubmit)="loginUser(loginModel)" class="needs-validation" novalidate>
-          <fieldset>
-            <legend class="visually-hidden">Login Form</legend>
-  
-            <!-- Email Input -->
-            <div class="mb-4">
-              <label for="loginEmail" class="form-label fw-bold">Email address</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light">
-                  <i class="bi bi-envelope text-muted"></i>
-                </span>
-                <input type="email"
-                       id="loginEmail"
-                       class="form-control py-2"
-                       name="Email"
-                       [(ngModel)]="loginModel.Email"
-                       required
-                       placeholder="Enter your email"
-                       #email="ngModel">
+    </div>
+  </header>
+
+  <!-- Conditional Login or Register Form -->
+  <div *ngIf="isloginview; else registerTemplate ">
+    <!-- Login Form -->
+    <div class="container d-flex justify-content-center align-items-center mt-4">
+      <div class="card p- border-0 shadow-lg" style="width: 100%; max-width: 500px;">
+        <div class="card-header bg-white border-0 text-center py-3">
+          <h3 class="m-0 text-primary">Welcome Back</h3>
+          <p class="text-muted mb-0">Sign in to continue</p>
+          <p class="tagline text-muted mt-3 mb-0">Connect. Chat. Share.</p>
+        </div>
+
+        <div class="card-body">
+          <form #form="ngForm" (ngSubmit)="loginUser(loginModel)" class="needs-validation" novalidate>
+            <fieldset>
+              <legend class="visually-hidden">Login Form</legend>
+
+              <!-- Email Input -->
+              <div class="mb-4">
+                <label for="loginEmail" class="form-label fw-bold">Email address</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
+                  <input type="email" id="loginEmail" class="form-control py-2" name="Email"
+                    [(ngModel)]="loginModel.Email" required placeholder="Enter your email" #email="ngModel">
+                </div>
+                <div *ngIf="email.invalid && email.touched" class="text-danger small">Email is required and must be
+                  valid.
+                </div>
               </div>
-              <div *ngIf="email.invalid && email.touched" class="text-danger small">
-                Email is required and must be valid.
+
+              <!-- Password Input -->
+              <div class="mb-4">
+                <label for="loginPassword" class="form-label fw-bold">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light"><i class="bi bi-lock text-muted"></i></span>
+                  <input type="password" id="loginPassword" class="form-control py-2" name="Password"
+                    [(ngModel)]="loginModel.Password" required placeholder="••••••••" #password="ngModel">
+                </div>
+                <div *ngIf="password.invalid && password.touched" class="text-danger small">Password is required.</div>
+                <div class="text-end mt-2">
+                  <a href="#" class="text-decoration-none small">Forgot password?</a>
+                </div>
               </div>
-            </div>
-  
-            <!-- Password Input -->
-            <div class="mb-4">
-              <label for="loginPassword" class="form-label fw-bold">Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light">
-                  <i class="bi bi-lock text-muted"></i>
-                </span>
-                <input type="password"
-                       id="loginPassword"
-                       class="form-control py-2"
-                       name="Password"
-                       [(ngModel)]="loginModel.Password"
-                       required
-                       placeholder="••••••••"
-                       #password="ngModel">
-              </div>
-              <div *ngIf="password.invalid && password.touched" class="text-danger small">
-                Password is required.
-              </div>
-              <div class="text-end mt-2">
-                <a href="#" class="text-decoration-none small">Forgot password?</a>
-              </div>
-            </div>
-  
-            <!-- Submit Button -->
-            <button type="submit"
-                    class="btn btn-primary w-100 py-2 fw-bold"
-                    [disabled]="form.invalid">
-              Sign In
-            </button>
-          </fieldset>
-        </form>
-  
-        <!-- Sign Up Link -->
-        <div class="text-center mt-4 pt-3 border-top">
-          <p class="text-muted mb-0">
-            Don't have an account?
-            <a href="javascript:void(0)"
-               class="text-primary fw-bold text-decoration-none"
-               (click)="isloginview = false">
-              Sign Up
-            </a>
-          </p>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" [disabled]="form.invalid">Sign
+                In</button>
+            </fieldset>
+          </form>
+
+          <!-- Sign Up Link -->
+          <div class="text-center mt-4 pt-3 border-top">
+            <p class="text-muted mb-0">
+              Don't have an account?
+              <a href="javascript:void(0)" class="text-primary fw-bold text-decoration-none"
+                (click)="isloginview = false">Sign Up</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  
-  }
-  
-  <!-- Registration Form -->
-  @else {
+
+  <!-- Registration Form Template -->
+  <ng-template #registerTemplate>
     <div class="container d-flex justify-content-center align-items-center vh-100">
       <div class="card p-4 border-0 shadow-lg w-100" style="max-width: 1000px;">
         <div class="card-header bg-white border-0 text-center py-3">
           <h3 class="m-0 text-primary">Create Account</h3>
           <p class="text-muted mb-0">Get started with your free account</p>
         </div>
-    
+
         <div class="card-body">
+          <!-- Profile Header with Cover and Profile Picture -->
+          <div class="position-relative mb-5">
+
+            <!-- Cover Photo -->
+            <img [src]="coverPhotoPreview || 'assets/cover.avif'" alt="Cover Photo" class="w-100 rounded"
+              style="height: 200px; object-fit: cover;" />
+
+            <!-- Upload Cover Button -->
+            <input type="file" class="d-none" #coverInput (change)="handleFileInput($event, 'CoverPhoto')"
+              accept="image/*" />
+            <button class="btn btn-sm btn-primary position-absolute" style="top: 10px; right: 10px;"
+              (click)="coverInput.click()">
+              Change Cover
+            </button>
+
+            <!-- Profile Picture -->
+            <div class="position-absolute start-50 translate-middle" style="top: 180px; width: 120px; height: 120px;">
+              <img [src]="profilePicturePreview || 'assets/DefaultProfile.jpg'" alt="Profile"
+                class="rounded-circle border border-white shadow"
+                style="width: 120px; height: 120px; object-fit: cover;" />
+              <input type="file" class="d-none" #profileInput (change)="handleFileInput($event, 'ProfilePicture')"
+                accept="image/*" />
+              <button class="btn btn-sm btn-secondary position-absolute" style="bottom: 0; right: 0;"
+                (click)="profileInput.click()">
+                Edit
+              </button>
+            </div>
+          </div>
+
+
+          <!-- Main Form -->
           <form #form="ngForm" (ngSubmit)="registerUser()" class="needs-validation" novalidate>
             <div class="row">
               <!-- Column 1: Personal Info -->
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <fieldset class="mb-4">
-                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Personal Information</legend>
-    
+                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Personal Info</legend>
+
+                  <!-- Username -->
                   <div class="mb-3">
-                    <label for="userName" class="form-label fw-bold">Username</label>
+                    <label class="form-label fw-bold">Username</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-person text-muted"></i></span>
-                      <input type="text" class="form-control" id="userName" name="UserName"
-                             [(ngModel)]="RegisterRequest.UserName" required placeholder="Username">
+                      <input type="text" class="form-control" name="UserName" [(ngModel)]="RegisterRequest.UserName"
+                        required placeholder="Username">
                     </div>
                   </div>
-    
+
+                  <!-- Display Name -->
                   <div class="mb-3">
-                    <label for="displayName" class="form-label fw-bold">Display Name</label>
+                    <label class="form-label fw-bold">Display Name</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-person-badge text-muted"></i></span>
-                      <input type="text" class="form-control" id="displayName" name="DisplayName"
-                             [(ngModel)]="RegisterRequest.DisplayName" required placeholder="Your display name">
+                      <input type="text" class="form-control" name="DisplayName"
+                        [(ngModel)]="RegisterRequest.DisplayName" required placeholder="Your display name">
                     </div>
                   </div>
-    
+
+                  <!-- Email -->
                   <div class="mb-3">
-                    <label for="email" class="form-label fw-bold">Email</label>
+                    <label class="form-label fw-bold">Email</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
-                      <input type="email" class="form-control" id="email" name="Email"
-                             [(ngModel)]="RegisterRequest.Email" required placeholder="your@email.com">
+                      <input type="email" class="form-control" name="Email" [(ngModel)]="RegisterRequest.Email" required
+                        placeholder="your@email.com">
                     </div>
                   </div>
-    
+
+                  <!-- Phone -->
                   <div class="mb-3">
-                    <label for="phone" class="form-label fw-bold">Phone Number</label>
+                    <label class="form-label fw-bold">Phone Number</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-phone text-muted"></i></span>
-                      <input type="tel" class="form-control" id="phone" name="PhoneNumber"
-                             [(ngModel)]="RegisterRequest.PhoneNumber" placeholder="+1234567890">
+                      <input type="tel" class="form-control" name="PhoneNumber"
+                        [(ngModel)]="RegisterRequest.PhoneNumber" placeholder="+1234567890">
                     </div>
                   </div>
-    
+                </fieldset>
+              </div>
+
+              <!-- Column 2: Date & Gender -->
+              <div class="col-md-3">
+                <fieldset class="mb-4">
+                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Demographics</legend>
+                  <!-- Country -->
                   <div class="mb-3">
-                    <label for="dob" class="form-label fw-bold">Date Of Birth</label>
+                    <label class="form-label fw-bold">Country</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-globe text-muted"></i></span>
+                      <input type="text" class="form-control" name="Country" [(ngModel)]="RegisterRequest.Country"
+                        placeholder="Country">
+                    </div>
+                  </div>
+
+                  <!-- City -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">City</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
+                      <input type="text" class="form-control" name="City" [(ngModel)]="RegisterRequest.City"
+                        placeholder="City">
+                    </div>
+                  </div>
+                  <!-- Street -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Street</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="bi bi-signpost text-muted"></i></span>
+                      <input type="text" class="form-control" name="Street" [(ngModel)]="RegisterRequest.Street"
+                        placeholder="Street address">
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <!-- Column 3: Street & Bio -->
+              <div class="col-md-3">
+                <fieldset class="mb-4">
+                  <legend class="h6 text-muted mb-3 border-bottom pb-2">More Details</legend>
+
+                  <!-- Date of Birth -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Date Of Birth</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-calendar text-muted"></i></span>
-                      <input type="date" class="form-control" id="dob" name="DateOfBirth"
-                             [(ngModel)]="RegisterRequest.DateOfBirth">
+                      <input type="date" class="form-control" name="DateOfBirth"
+                        [(ngModel)]="RegisterRequest.DateOfBirth">
                     </div>
                   </div>
-    
+
+                  <!-- Gender -->
                   <div class="mb-3">
-                    <label for="gender" class="form-label fw-bold">Gender</label>
+                    <label class="form-label fw-bold">Gender</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-gender-ambiguous text-muted"></i></span>
-                      <select class="form-select" id="gender" name="Gender"
-                              [(ngModel)]="RegisterRequest.Gender" required>
+                      <select class="form-select" name="Gender" [(ngModel)]="RegisterRequest.Gender" required>
                         <option value="" disabled selected>Select Gender</option>
                         <option *ngFor="let genderOption of genderOptions" [value]="genderOption">
                           {{ genderOption }}
@@ -171,113 +231,61 @@
                       </select>
                     </div>
                   </div>
+
+                  <!-- Bio -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Bio</label>
+                    <textarea class="form-control" name="Bio" rows="5" [(ngModel)]="RegisterRequest.Bio"
+                      placeholder="Tell us about yourself..."></textarea>
+                  </div>
                 </fieldset>
               </div>
-    
-              <!-- Column 2: Security + Profile -->
-              <div class="col-md-4">
+
+              <!-- Column 4: Security -->
+              <div class="col-md-3">
                 <fieldset class="mb-4">
-                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Account Security</legend>
-    
+                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Security</legend>
+
+                  <!-- Password -->
                   <div class="mb-3">
-                    <label for="password" class="form-label fw-bold">Password</label>
+                    <label class="form-label fw-bold">Password</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-lock text-muted"></i></span>
-                      <input type="password" class="form-control" id="password" name="Password"
-                             [(ngModel)]="RegisterRequest.Password" required placeholder="Create password">
+                      <input type="password" class="form-control" name="Password" [(ngModel)]="RegisterRequest.Password"
+                        required placeholder="Create password">
                     </div>
                     <div class="form-text">Use 8+ characters with letters, numbers, and symbols</div>
                   </div>
-    
+
+                  <!-- Confirm Password -->
                   <div class="mb-3">
-                    <label for="confirmPassword" class="form-label fw-bold">Confirm Password</label>
+                    <label class="form-label fw-bold">Confirm Password</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light"><i class="bi bi-lock text-muted"></i></span>
-                      <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword"
-                             [(ngModel)]="RegisterRequest.ConfirmPassword" required placeholder="Confirm password">
-                    </div>
-                  </div>
-                </fieldset>
-    
-                <fieldset>
-                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Profile Information</legend>
-    
-                  <div class="mb-3">
-                    <label for="bio" class="form-label fw-bold">Bio</label>
-                    <textarea class="form-control" id="bio" name="Bio" rows="3"
-                              [(ngModel)]="RegisterRequest.Bio" placeholder="Tell us about yourself..."></textarea>
-                  </div>
-    
-                  <div class="mb-3">
-                    <label for="profilePicture" class="form-label fw-bold">Profile Picture</label>
-                    <input type="file" class="form-control" id="profilePicture" name="ProfilePicture"
-                           (change)="handleFileInput($event, 'ProfilePicture')" accept="image/*">
-                    <div *ngIf="profilePicturePreview" class="mt-2">
-                      <img [src]="profilePicturePreview" class="img-thumbnail" width="100" alt="Profile preview">
-                    </div>
-                  </div>
-    
-                  <div class="mb-3">
-                    <label for="coverPhoto" class="form-label fw-bold">Cover Photo</label>
-                    <input type="file" class="form-control" id="coverPhoto" name="CoverPhoto"
-                           (change)="handleFileInput($event, 'CoverPhoto')" accept="image/*">
-                    <div *ngIf="coverPhotoPreview" class="mt-2">
-                      <img [src]="coverPhotoPreview" class="img-thumbnail" width="100" alt="Cover preview">
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-    
-              <!-- Column 3: Address Info -->
-              <div class="col-md-4">
-                <fieldset class="mb-4">
-                  <legend class="h6 text-muted mb-3 border-bottom pb-2">Address Information</legend>
-    
-                  <div class="mb-3">
-                    <label for="country" class="form-label fw-bold">Country</label>
-                    <div class="input-group">
-                      <span class="input-group-text bg-light"><i class="bi bi-globe text-muted"></i></span>
-                      <input type="text" class="form-control" id="country" name="Country"
-                             [(ngModel)]="RegisterRequest.Country" placeholder="Country">
-                    </div>
-                  </div>
-    
-                  <div class="mb-3">
-                    <label for="city" class="form-label fw-bold">City</label>
-                    <div class="input-group">
-                      <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
-                      <input type="text" class="form-control" id="city" name="City"
-                             [(ngModel)]="RegisterRequest.City" placeholder="City">
-                    </div>
-                  </div>
-    
-                  <div class="mb-3">
-                    <label for="street" class="form-label fw-bold">Street</label>
-                    <div class="input-group">
-                      <span class="input-group-text bg-light"><i class="bi bi-signpost text-muted"></i></span>
-                      <input type="text" class="form-control" id="street" name="Street"
-                             [(ngModel)]="RegisterRequest.Street" placeholder="Street address">
+                      <input type="password" class="form-control" name="ConfirmPassword"
+                        [(ngModel)]="RegisterRequest.ConfirmPassword" required placeholder="Confirm password">
                     </div>
                   </div>
                 </fieldset>
               </div>
             </div>
-    
-            <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mt-3" [disabled]="!form.valid">
-              Create Account
-            </button>
+
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mt-3" [disabled]="!form.valid">Create
+              Account</button>
           </form>
-    
+
+          <!-- Already have an account -->
           <div class="text-center mt-4 pt-3 border-top">
             <p class="text-muted mb-0">
               Already have an account?
-              <a href="javascript:void(0)" class="text-primary fw-bold text-decoration-none" (click)="isloginview = true">
-                Sign In
-              </a>
+              <a href="javascript:void(0)" class="text-primary fw-bold text-decoration-none"
+                (click)="isloginview = true">Sign In</a>
             </p>
           </div>
         </div>
       </div>
     </div>
-    
-  }
+  </ng-template>
+</div>

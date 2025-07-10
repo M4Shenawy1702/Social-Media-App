@@ -1,46 +1,39 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
-  <div class="container-fluid row align-items-center">
-    <!-- Logo -->
-    <div class="col-2">
-      <a routerLink="/main-layout" class="navbar-brand text-white d-flex align-items-center" aria-label="Home">
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
-          class="bi bi-facebook rounded-circle me-2" viewBox="0 0 16 16">
-          <path
-            d="M8.94 6.02H7.29v1.438h1.184v1.13H7.29V12H6.032V8.59H4.878V7.46h1.154V6.55c0-1.093.687-1.68 1.62-1.68h1.187v1.15z" />
-        </svg>
-        Chatting<span class="fw-bold">App</span>
-      </a>
-    </div>
+  <div class="container-fluid d-flex align-items-center justify-content-between flex-nowrap">
+    <!-- Brand -->
+    <a routerLink="/main-layout" class="navbar-brand d-flex align-items-center text-white" aria-label="Home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+        class="bi bi-facebook rounded-circle me-2" viewBox="0 0 16 16">
+        <path
+          d="M8.94 6.02H7.29v1.438h1.184v1.13H7.29V12H6.032V8.59H4.878V7.46h1.154V6.55c0-1.093.687-1.68 1.62-1.68h1.187v1.15z" />
+      </svg>
+      Link<span class="fw-bold">Up</span>
+    </a>
 
-    <!-- Navigation Links -->
-    <div class="col-8">
-      <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-        <ul class="navbar-nav d-flex flex-row gap-4">
-          <li class="nav-item">
-            <a routerLink="/main-layout/dashboard" class="nav-link text-white" routerLinkActive="active">
-              <i class="bi bi-person fs-5" title="Profile"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a routerLink="/main-layout" class="nav-link text-white" aria-current="page" routerLinkActive="active">
-              <i class="bi bi-house fs-5" title="Home"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="['/main-layout/connections']" class="nav-link text-white" routerLinkActive="active">
-              <i class="bi bi-people fs-5" title="Friends"></i>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <!-- Center Icons -->
+    <ul class="navbar-nav d-flex flex-row align-items-center justify-content-center gap-3 mb-0">
+      <li class="nav-item">
+        <a routerLink="/main-layout/dashboard" class="nav-link text-white" routerLinkActive="active">
+          <i class="bi bi-person fs-5" title="Profile"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/main-layout" class="nav-link text-white" routerLinkActive="active">
+          <i class="bi bi-house fs-5" title="Home"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/main-layout/connections" class="nav-link text-white" routerLinkActive="active">
+          <i class="bi bi-people fs-5" title="Friends"></i>
+        </a>
+      </li>
+    </ul>
 
-    <!-- Search + Profile -->
-    <div class="col-2 d-flex align-items-center justify-content-end gap-2 position-relative">
-
-      <!-- Search Toggle -->
+    <!-- Right Side: Search + Profile -->
+    <div class="d-flex align-items-center gap-3">
+      <!-- Search -->
       <div class="position-relative">
-        <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center me-2"
+        <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center"
           style="width: 36px; height: 36px;" (click)="isSearchVisible = !isSearchVisible">
           <i class="bi bi-search"></i>
         </button>
@@ -51,7 +44,6 @@
           <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()"
             class="form-control form-control-sm" placeholder="Search users..." autocomplete="off" />
 
-          <!-- Results -->
           <ul *ngIf="searchTerm.trim() && searchResults.length > 0" class="list-group mt-2"
             style="max-height: 200px; overflow-y: auto;">
             <li *ngFor="let result of searchResults" (click)="goToUserProfile(result.id)"
@@ -68,7 +60,6 @@
             </a>
           </ul>
 
-          <!-- No users found -->
           <div *ngIf="searchTerm.trim() && searchResults.length === 0"
             class="bg-white border rounded p-2 w-100 text-center mt-2">
             <small class="text-muted">No users found.</small>
@@ -81,9 +72,9 @@
         </div>
       </div>
 
-      <!-- User Dropdown / Login -->
+      <!-- User Dropdown -->
       <ng-container *ngIf="showLoggedInNav; else guestLinks">
-        <div class="dropdown">
+        <div class="dropdown align-items-center">
           <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#"
             id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <img [src]="user?.profilePictureUrl ? baseUrl + user.profilePictureUrl : 'assets/DefaultProfile.jpg'"
@@ -91,7 +82,8 @@
             <span class="d-none d-md-inline">{{ user?.name }}</span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="userDropdown">
+          <ul class="dropdown-menu dropdown-menu-end text-small shadow align-items-center"
+            aria-labelledby="userDropdown">
             <li>
               <a [routerLink]="['/main-layout/profile', getUserId()]" class="dropdown-item">
                 <i class="bi bi-person fs-5"></i> Profile
@@ -110,8 +102,9 @@
         </div>
       </ng-container>
 
+      <!-- Guest Links -->
       <ng-template #guestLinks>
-        <a routerLink="/login" class="nav-link text-white">Login</a>
+        <a routerLink="/login" class="btn btn-outline-light btn-sm">Login</a>
       </ng-template>
     </div>
   </div>

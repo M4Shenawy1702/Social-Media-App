@@ -9,7 +9,6 @@ export interface UserProfile {
   coverPhotoUrl: string;
   bio: string;
   dateOfBirth: string;
-  createdAt: string;
   isOnline: boolean;
   phoneNumber: string;
   userAddress: UserAddress;

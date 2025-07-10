@@ -14,5 +14,9 @@ namespace API.Specifications
         {
             AddInclude(c => c.Messages);
         }
+        public GetChatSpecification(int chatId)
+        : base(c => c.Id == chatId)
+        {
+        }
     }
 }

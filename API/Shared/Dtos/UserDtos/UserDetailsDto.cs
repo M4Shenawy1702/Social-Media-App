@@ -14,7 +14,7 @@ namespace API.Shared.Dtos.UserDtos
         public string CoverPhotoUrl { get; set; }
         public string Bio { get; set; }
         public string PhoneNumber { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsOnline { get; set; }
         public UserAddressDto UserAddress { get; set; }
@@ -29,7 +29,7 @@ namespace API.Shared.Dtos.UserDtos
             string profilePictureUrl,
             string coverPhotoUrl,
             string bio,
-            DateTime dateOfBirth,
+            DateOnly dateOfBirth,
             DateTime createdAt,
             bool isOnline,
             UserAddressDto address)
@@ -45,14 +45,6 @@ namespace API.Shared.Dtos.UserDtos
             CreatedAt = createdAt;
             IsOnline = isOnline;
             UserAddress = address;
-        }
-
-        private int CalculateAge()
-        {
-            var today = DateTime.Today;
-            var age = today.Year - DateOfBirth.Year;
-            if (DateOfBirth.Date > today.AddYears(-age)) age--;
-            return age;
         }
     }
 }

@@ -28,7 +28,7 @@
 
           <!-- Profile picture -->
           <img *ngIf="reqest.profilePictureUrl; else defaultImg"
-               [src]="baseUrl + reqest.profilePictureUrl"
+               [src]=" baseUrl  + reqest.profilePictureUrl"
                class="card-img-top object-fit-cover rounded-top"
                style="height: 180px;"
                [alt]="reqest.friendName + '\'s profile photo'">

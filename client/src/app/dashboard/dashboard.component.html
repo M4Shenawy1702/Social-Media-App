@@ -1,63 +1,66 @@
-<!-- Loading indicator -->
-<div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+<div class="container">
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <span class="ms-3">Loading users...</span>
   </div>
-  <span class="ms-3">Loading users...</span>
-</div>
 
-<!-- Error message -->
-<div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3">
-  {{ errorMessage }}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+  <!-- Error message -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
 
-<!-- Users cards -->
-<div *ngIf="!isLoading && !errorMessage && users.data.length > 0"
-  class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
-  <div class="col" *ngFor="let user of users.data; trackBy: trackByUserId">
-    <div class="card h-100">
-      <div style="cursor: pointer;" [routerLink]="['/main-layout/profile', user.id]"
-        class="text-decoration-none text-dark">
+  <!-- Users cards -->
+  <div *ngIf="!isLoading && !errorMessage && users.data.length > 0"
+    class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-3">
+    <div class="col" *ngFor="let user of users.data; trackBy: trackByUserId">
+      <div class="card h-100">
+        <div style="cursor: pointer;" [routerLink]="['/main-layout/profile', user.id]"
+          class="text-decoration-none text-dark">
 
-        <img *ngIf="user.profilePictureUrl" [src]="baseUrl + user.profilePictureUrl"
-          class="card-img-top object-fit-cover" style="height: 180px" [alt]="user.userName + '\'s profile photo'">
+          <img *ngIf="user.profilePictureUrl" [src]="baseUrl + user.profilePictureUrl"
+            class="card-img-top object-fit-cover" style="height: 180px" [alt]="user.userName + '\'s profile photo'">
 
-        <div *ngIf="!user.profilePictureUrl"
-          class="card-img-top bg-primary text-white d-flex align-items-center justify-content-center"
-          style="height: 180px">
-          <span class="display-4">{{ user.userName | slice:0:1 | uppercase }}</span>
-        </div>
-
-        <div class="card-body">
-          <h5 class="card-title">{{ user.userName }}</h5>
-          <div class="card-text">
-            <p class="mb-1"><i class="bi bi-envelope me-2"></i>{{ user.email || 'No email provided' }}</p>
-            <p class="mb-0"><i class="bi bi-telephone me-2"></i>{{ user.phoneNumber || 'No phone number' }}</p>
+          <div *ngIf="!user.profilePictureUrl"
+            class="card-img-top bg-primary text-white d-flex align-items-center justify-content-center"
+            style="height: 180px">
+            <span class="display-4">{{ user.userName | slice:0:1 | uppercase }}</span>
           </div>
-        </div>
 
+          <div class="card-body">
+            <h5 class="card-title">{{ user.displayName }}</h5>
+            <div class="card-text">
+              <p class="mb-1"><i class="bi bi-envelope me-2"></i>{{ user.email || 'No email provided' }}</p>
+              <p class="mb-0"><i class="bi bi-telephone me-2"></i>{{ user.phoneNumber || 'No phone number' }}</p>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Pagination controls -->
-<nav class="d-flex justify-content-center mt-4" *ngIf="!isLoading && !errorMessage && users.data.length > 0">
-  <ul class="pagination">
-    <li class="page-item" *ngIf="!noMoreUsers">
-      <button class="btn btn-outline-primary" (click)="LoadMore()">Load More</button>
-    </li>
-    <li class="page-item" *ngIf="noMoreUsers">
-      <span class="text-success fw-bold">✅ All users loaded.</span>
-    </li>
-  </ul>
-</nav>
+  <!-- Pagination controls -->
+  <nav class="d-flex justify-content-center mt-4" *ngIf="!isLoading && !errorMessage && users.data.length > 0">
+    <ul class="pagination">
+      <li class="page-item" *ngIf="!noMoreUsers">
+        <button class="btn btn-outline-primary" (click)="LoadMore()">Load More</button>
+      </li>
+      <li class="page-item" *ngIf="noMoreUsers">
+        <span class="text-success fw-bold">✅ All users loaded.</span>
+      </li>
+    </ul>
+  </nav>
 
-<!-- No users found -->
-<div *ngIf="!isLoading && !errorMessage && users.data.length === 0"
-  class="d-flex justify-content-center align-items-center vh-100">
-  <div class="alert alert-info text-center">
-    No users found
+  <!-- No users found -->
+  <div *ngIf="!isLoading && !errorMessage && users.data.length === 0"
+    class="d-flex justify-content-center align-items-center vh-100">
+    <div class="alert alert-info text-center">
+      No users found
+    </div>
   </div>
+
 </div>

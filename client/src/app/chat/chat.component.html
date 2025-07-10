@@ -1,12 +1,12 @@
 <div class="chat-container">
 
-  <!-- Username Header -->
-  <div class="chat-header">
-    <img class="chat-profile-picture"
-      [src]="user?.profilePictureUrl ? baseUrl + user.profilePictureUrl : 'assets/DefaultProfile.jpg'"
-      alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
-    <h2 class="chat-username">{{ user?.userName }}</h2>
+  <!-- Header -->
+  <div class="d-flex align-items-center border-bottom pb-2 border rounded p-2 shadow-sm">
+    <img [src]="user.profilePictureUrl ? baseUrl + user.profilePictureUrl : 'assets/DefaultProfile.jpg'" alt="Profile"
+      width="40" height="40" class="rounded-circle me-2" />
+    <h2 class="fs-5 text-truncate mb-0">{{ user?.displayName }}</h2>
   </div>
+
 
   <!-- Messages Container -->
   <div #messagesContainer class="messages-container" tabindex="0" aria-live="polite" aria-relevant="additions">
@@ -37,7 +37,7 @@
               <hr class="dropdown-divider" />
             </li>
             <li>
-              <button class="dropdown-item text-danger" (click)="deleteMessage(msg)">
+              <button class="dropdown-item text-danger" (click)="deleteMessage(msg.id)">
                 <i class="bi bi-trash me-1"></i> Delete Message
               </button>
             </li>
@@ -53,11 +53,14 @@
     </div>
   </div>
 
-  <!-- Input Field -->
-  <div class="input-container mt-3">
-    <input [(ngModel)]="newMessage" placeholder="Type a message..." (keyup.enter)="sendMessage()"
-      aria-label="Type a message" autocomplete="off" />
-    <button (click)="sendMessage()" aria-label="Send message">Send</button>
+  <!-- Input -->
+  <div class="input-group mt-3 flex-shrink-0">
+    <input type="text" [(ngModel)]="newMessage" (keyup.enter)="editMessage ? oneditMessage() : sendMessage()"
+      class="form-control" placeholder="Type a message..." autocomplete="off">
+    <button *ngIf="!editMessage" class="btn btn-primary" type="button" (click)="sendMessage()">Send</button>
+    <button *ngIf="editMessage" class="btn btn-secondary" type="button" (click)="oneditMessage()">Edit</button>
+    <button *ngIf="editMessage" class="btn btn-secondary" type="button" (click)="cancelEdit()">Cancel</button>
   </div>
+
 
 </div>

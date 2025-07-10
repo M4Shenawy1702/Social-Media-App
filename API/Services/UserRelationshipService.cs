@@ -150,7 +150,8 @@ namespace API.Services
                     {
                         Id = r.Id,
                         FriendName = friend.DisplayName,
-                        ProfilePictureUrl = friend.ProfilePictureUrl ?? string.Empty
+                        ProfilePictureUrl = friend.ProfilePictureUrl ?? string.Empty,
+                        FriendId = friend.Id    
                     };
                 })
                 .ToList();
